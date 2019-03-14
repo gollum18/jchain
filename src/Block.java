@@ -1,5 +1,6 @@
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Objects;
 
 public class Block {
 
@@ -92,6 +93,22 @@ public class Block {
         return mTransactions.contains(txHash);
     }
 
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Block)) {
+            return false;
+        }
+        Block block = (Block)obj;
+        return sHash.equals(block.getHash());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this);
+    }
+
     /**
      * Trys to get a transaction from the block with the given 
      *  transaction hash.
@@ -99,6 +116,15 @@ public class Block {
      */
     public Transaction getTransaction(String txHash) {
         return mTransactions.get(txHash);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Block Hash: ").append(sHash).append("\n");
+        sb.append("Transactions: ").append("\n");
+        sb.append(mTransactions.toString()).append("\n");
+        return sb.toString();
     }
 
 }

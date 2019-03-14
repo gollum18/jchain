@@ -95,6 +95,12 @@ public class MerkleTree {
         throw new UnsupportedOperationException();
     }
 
+    public String toString() {
+        if (mRoot == null) {
+            return "No transactions to display in MerkleTree!";
+        } return mRoot.toString();
+    }
+
     private class MerkleNode {
         
         // fields
@@ -281,6 +287,20 @@ public class MerkleTree {
             }
             return Math.max(left, right);
         } // end height
+
+        public String toString() {
+            if (mTransaction != null) {
+                return mTransaction.toString();
+            }
+            StringBuilder sb = new StringBuilder();
+            if (mLeft != null) {
+                sb.append(mLeft.toString()).append("\n");
+            }
+            if (mRight != null) {
+                sb.append(mRight.toString()).append("\n");
+            }
+            return sb.toString();
+        }
 
     } // end MerkleNode
 
