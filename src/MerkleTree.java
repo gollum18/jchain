@@ -85,11 +85,14 @@ public class MerkleTree {
 
     public static MerkleTree load(
             Collection<Transaction> txList) {
-        
+        // todo: implement loading a merkle tree given a 
+        //   collection
+        throw new UnsupportedOperationException();        
     }
 
     public void save() {
         // todo: implement writing the tree to file
+        throw new UnsupportedOperationException();
     }
 
     private class MerkleNode {

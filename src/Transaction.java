@@ -48,6 +48,24 @@ public class Transaction {
         return sHash;
     }
 
+    /**
+     * Determines the transaction size in bytes.
+     */
+    public int bytes() {
+        int size = 0;
+        // add the size of all inputs
+        for (String input : mInputs) {
+            size += input.getBytes().length;
+        }
+        // add the size of all outputs
+        for (String output : mOutputs) {
+            size += output.getBytes().length;
+        }
+        // add in the size of the hash
+        size += sHash.getBytes().length;
+        return size;
+    }
+
     public String computeHash() {
         StringBuilder sb = new StringBuilder();
         sb.append(getVersionNumber());
