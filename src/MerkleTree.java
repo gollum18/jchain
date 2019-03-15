@@ -1,6 +1,7 @@
 import java.util.Collection;
 import java.util.Iterator;
 
+// todo: convert this to a generic structure so I can use it in other projects
 public class MerkleTree {
 
     private MerkleNode mRoot;

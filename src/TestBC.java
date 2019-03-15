@@ -2,31 +2,73 @@ import java.util.LinkedList;
 
 public class TestBC {
 
+    public static final int TX_AMOUNT = 10;
+
     public static void main(String[] args) {
-        Transaction tx = new Transaction(
+        // create 10 transaction objects
+        Transaction[] txArray = new Transaction[TX_AMOUNT];
+        int input = 0, output = 0;
+        String[] inputs = null, outputs = null;
+        for (int i = 0; i < txArray.length; i++) {
+            input = (int)Math.floor(Math.random() * 100);
+            output = (int)Math.floor(Math.random() * input);
+            inputs = new String[]{"A:"+String.valueOf(input)};
+            outputs = new String[]{"B:"+String.valueOf(output)};
+            txArray[i] = new Transaction(inputs, outputs);
+        }
+
+        // generate the previous hash
+        // SHA-256 hashes are 64 characters in length, pad an empty string
+        // with 64 zeros
+        String genesisHash = padString(64, '0', "");
+        
+        // create the genesis transaction
+        Transaction genesisTx = new Transaction(
                 new String[]{"A:30"},
                 new String[]{"B:30"});
-        Transaction tx2 = new Transaction(
-                new String[]{"A:25", "B:25"},
-                new String[]{"C:25", "D:15", "E:10"});
-        Transaction tx3 = new Transaction(
-                new String[]{"A:10", "B:15", "C:50"},
-                new String[]{"D:75"});
-        Transaction tx4 = new Transaction(
-                new String[]{"A:45"},
-                new String[]{"B:20", "C:25"});
-        LinkedList<Transaction> txs = new LinkedList<>();
-        txs.add(tx);
-        txs.add(tx2);
-        txs.add(tx3);
-        txs.add(tx4);
-        Block b1 = new Block(txs, BCUtil.getInstance().doubleHash("This is the genesis block!! There is no prior block. So this hash is just generated from this string."));
-        BC chain = new BC(b1);
-        txs.remove(tx3);
-        txs.remove(tx4);
-        Block b2 = new Block(txs, chain.getLeadBlock().getHash());
-        chain.addBlock(b2);
-        System.out.println(chain.toString());
+
+        // create a collection object and put the genesis transaction in it
+        LinkedList<Transaction> txList = new LinkedList<>();
+        txList.add(genesisTx);
+
+        // create the genesis block
+        Block genesisBlock = new Block(txList, genesisHash);
+        
+        // create a chain instance passing in the initial block
+        BC chain = new BC(genesisBlock);
+
+        // prep for the next block
+        txList.clear();
+        for (int i = 0; i < 5; i++) {
+            txList.add(txArray[i]);
+        }
+
+        // create the next block at height 1
+        chain.addBlock(new Block(txList, chain.getLeadBlock().getHash()));
+
+        // prep for the next block
+        txList.clear();
+        for (int i = 5; i < txArray.length; i++) {
+            txList.add(txArray[i]);
+        }
+
+        // create the next block at height 2
+        chain.addBlock(new Block(txList, chain.getLeadBlock().getHash()));
+
+        // get the block at height 1 and print it
+        System.out.println("Testing function 1...");
+        System.out.println(chain.getBlockByHeight(1));
+
+        // get a random transaction from the chain and print it
+        System.out.println("Testing function 2...");
+        int pos = (int)(Math.floor(Math.random()*txArray.length));
+        String txHash = txArray[pos].getHash();
+        System.out.println(chain.getTransactionByHash(txHash));
+    }
+
+    // method adapted from: https://stackoverflow.com/questions/13475388/generate-fixed-length-strings-filled-with-whitespaces
+    public static String padString(int width, char fill, String toPad) {
+        return new String(new char[width - toPad.length()]).replace('\0', fill) + toPad;
     }
 
 }
