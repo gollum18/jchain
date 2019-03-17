@@ -150,20 +150,7 @@ public class MerkleTree {
                 mLeft = new MerkleNode(mTransaction);
                 mRight = new MerkleNode(tx);
                 mTransaction = null;
-            } 
-            // check if there is a left child and no right
-            else if (mLeft != null && mRight == null) {
-                mRight = new MerkleNode(mTransaction);
-                mTransaction = null;
-                mRight.add(tx);
             }
-            // check if there is a right child and no left
-            else if (mLeft == null && mRight != null) {
-                mLeft = new MerkleNode(mTransaction);
-                mTransaction = null;
-                mLeft.add(tx);
-            }
-            // otherwise there are two children, add based on 
             //  height to 'preserve' balance of tree
             else {
                 // I'm not fond of this method
