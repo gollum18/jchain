@@ -27,6 +27,5 @@ if javac:
     # fork off javac
     if os.fork() == 0:
         os.execl(javac, "javac", '-cp', src, '-d', out, '@sources.txt')
-    temp.close()
 else:
     print('javac not found in path, unable to automatically build')
