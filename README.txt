@@ -1,5 +1,4 @@
 Name: Christen Ford
-CSUID: 2741896
 Project: Project 3
 Class: CIS 593 - Blockchain and Cryptocurrency Programming
 
