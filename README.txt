@@ -43,8 +43,7 @@ If you are on Windows, then make sure that python3 is in your PATH environment v
     python3 build.py (if you also have python2 installed)
 
 2.) If the build script did not work for you, then you must manually compile the software. Fortunately, this is only two commands (at least for now, but it is bound to change):
-    mkdir out (if it does not already exist)
-    javac -cp ./src -d ./out jchain.TestBC (for now, TestBC links in all the other source files, this will certainly change in the future)
+    javac -cp ./src -d ./out jchain/TestBC.java (for now, TestBC links in all the other source files, this will certainly change in the future)
 
 It is preferred that you compile the project using the python build script. It automates searching for the all of the java files so you do not have to. It will also automatically call javac on them too.
 
