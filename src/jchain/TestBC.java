@@ -1,4 +1,10 @@
+package jchain;
+
 import java.util.LinkedList;
+
+import jchain.bc.BC;
+import jchain.bc.Block;
+import jchain.bc.Transaction;
 
 public class TestBC {
 

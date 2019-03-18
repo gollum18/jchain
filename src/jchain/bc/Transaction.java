@@ -1,6 +1,10 @@
+package jchain.bc;
+
 import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.Objects;
+
+import jchain.util.BCUtil;
 
 public class Transaction {
     

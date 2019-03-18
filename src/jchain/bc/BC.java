@@ -1,5 +1,10 @@
+package jchain.bc;
+
 import java.util.LinkedList;
 import java.util.ListIterator;
+
+import jchain.bc.Block;
+import jchain.bc.Transaction;
 
 public class BC {
     

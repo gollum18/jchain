@@ -1,6 +1,13 @@
+package jchain.bc;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
+
+import jchain.bc.Header;
+import jchain.bc.Transaction;
+import jchain.util.BCUtil;
+import jchain.util.MerkleTree;
 
 public class Block {
 

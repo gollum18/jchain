@@ -1,5 +1,10 @@
+package jchain.util;
+
 import java.util.Collection;
 import java.util.Iterator;
+
+import jchain.bc.Transaction;
+import jchain.util.BCUtil;
 
 // todo: convert this to a generic structure so I can use it in other projects
 public class MerkleTree {

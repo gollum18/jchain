@@ -1,3 +1,5 @@
+package jchain.bc;
+
 public class Header {
 
     public static final int VERSION_NUMBER = 1;

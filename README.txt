@@ -5,14 +5,14 @@ Class: CIS 593 - Blockchain and Cryptocurrency Programming
 
 Language Used: Java
 
-Note: Alongside this documentation, you should have received the following classes (as Java source code):
-- BC.java
-- BCUtil.java
-- Block.java
-- Header.java
-- MerkleTree.java
-- TestBC.java
-- Transaction.java
+Note: Alongside this documentation, you should have received the following classes (as Java source code found inside the src folder with the following filepaths):
+- jchain/bc/BC.java
+- jchain/util/BCUtil.java
+- jchain/bc/Block.java
+- jchain/bc/Header.java
+- jchain/util/MerkleTree.java
+- jchain/TestBC.java
+- jchain/bc/Transaction.java
 
 While I feel that the documentation contained in each source file should be able to speak to the class itself. A brief overview of each class is presented here:
 
@@ -31,20 +31,27 @@ While I feel that the documentation contained in each source file should be able
 - Transaction.java: Implements a transaction in a blockchain. Transactions can store any number of inputs and outputs (bu they must have at least one input and at least one output. Valid I/O format is always a string in the form (address:amount), although this is not explictly checked yet - something for my todo list I suppose. Inputs and outputs are passed into the transaction during construction as two string arrays. These are then stored internally in their own respective ArrayLists which are intialized to the same size as their respective array (to save as much space as possible. I considered using arrays for this, but I wanted to offer a way to allow users to access the inputs and outputs without being able to modify their containing data structre, while at the same time, being space aware.
 
 Compilation Instructions:
-Extract all Java source files listed above to the same directory.
+First extract the contents of the zip to a directory. Next cd into the root directory of the project (the directory you extracted the zip to). Finally, you have two choices to compile the project:
 
-The best way to compile the project is to manually compile the source files using javac. It is imperative (at this time) that each Java source file be compiled in order for the project to function. You *should* be able to just compile TestBC.java and that in turn should cause javac to compile every class referenced by it. However, if not then compile them in this order:
-    MerkleTree.java AND BCUtil.java (order does not matter in this case)
-    Transaction.java
-    Header.java
-    Block.java
-    BC.java
-    TestBC.java
-These are compiled using the following command: javac [filename]
+1.) If you have Python 3.3+ installed, run the following command:
+    ./build.py (on Linux/Mac)
+The command will automatically select your python3 interpreter and invoke build.py. If this fails, then manually specify your python3 installation like so:
+    python3 build.py (on Ubuntu at least, you may have to try a different specification for python3 on different platforms)
 
-Alternatively if you have at least Python 3.3 available on your machine, you can compile the project in one command by telling Python to tell javac to compile it for you:
-    'python build.py'
-This file simply executes javac for every *.java file in the source directory. It should be noted that 'build.py' is not aware of your java installation. I make the assumption that javac is set up in your Windows or Unix/Linux PATH environment variable. If it is not, build.py will fail. In that case, simply fall back to compiling the java source files by hand.
+If you are on Windows, then make sure that python3 is in your PATH environment variable (either as python3 or simply python if you do not have python2 installed, and invoke the following:
+    python build.py (if python3 is the only version you have installed)
+    python3 build.py (if you also have python2 installed)
+
+2.) If the build script did not work for you, then you must manually compile the software. Fortunately, this is only two commands (at least for now, but it is bound to change):
+    mkdir out (if it does not already exist)
+    javac -cp ./src -d ./out jchain.TestBC (for now, TestBC links in all the other source files, this will certainly change in the future)
+
+It is preferred that you compile the project using the python build script. It automates searching for the all of the java files so you do not have to. It will also automatically call javac on them too.
+
+Of course, if you are using an IDE to work on this project, all of this is handled for you by the IDE itself.
 
 Running the Project:
-Once you have the project compiled (either by hand, or through build.py), simply execute java on the TestBC.class file.
+To run the project, assuming you have correctly compiled the project, cd into the root directory of the project (it should contain the src and out directories, build.py, and this document). 
+
+From there enter the following command to test the project:
+java -cp ./out jchain.TestBC
