@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.ListIterator;
 import java.util.Objects;
 
 public class Transaction {
@@ -7,8 +9,8 @@ public class Transaction {
     private int nVersionNumber;
     private int nInCounter;
     private int nOutCounter;
-    private String[] mInputs;
-    private String[] mOutputs;
+    private ArrayList<String> mInputs;
+    private ArrayList<String> mOutputs;
     private String sHash;
 
     public Transaction(String[] inputs, String[] outputs) {
@@ -16,11 +18,23 @@ public class Transaction {
     }
 
     public Transaction(String[] inputs, String[] outputs, int versionNumber) {
+        if (inputs == null || inputs.length == 0) {
+            throw new IllegalArgumentException();
+        }
+        if (outputs == null || outputs.length == 0) {
+            throw new IllegalArgumentException();
+        }
         nVersionNumber = versionNumber;
         nInCounter = inputs.length;
         nOutCounter = outputs.length;
-        mInputs = inputs;
-        mOutputs = outputs;
+        mInputs = new ArrayList<>(inputs.length);
+        for (String input : inputs) {
+            mInputs.add(input);
+        }
+        mOutputs = new ArrayList<>(outputs.length);
+        for (String output : outputs) {
+            mOutputs.add(output);
+        }
         sHash = computeHash();
     }
 
@@ -35,13 +49,13 @@ public class Transaction {
     public int getOutputCount() {
         return nOutCounter;
     }
-
-    public String[] getInputs() {
-        return mInputs;
+    
+    public ListIterator<String> getInputs() {
+        return mInputs.listIterator();
     }
 
-    public String[] getOutputs() {
-        return mOutputs;
+    public ListIterator<String> getOutputs() {
+        return mOutputs.listIterator();
     }
 
     public String getHash() {
@@ -70,11 +84,11 @@ public class Transaction {
         StringBuilder sb = new StringBuilder();
         sb.append(getVersionNumber());
         sb.append(getInputCount());
-        for (String input : getInputs()) {
+        for (String input : mInputs) {
             sb.append(input);
         }
         sb.append(getOutputCount());
-        for (String output : getOutputs()) {
+        for (String output : mOutputs) {
             sb.append(output);
         }
         return BCUtil.getInstance().doubleHash(sb.toString());
