@@ -1,12 +1,8 @@
-#! /usr/bin/python3
+#! /usr/bin/python
 
 import os
-import shutil
-import tempfile
 
-javac = shutil.which('javac')
-
-if javac:
+try:
     # create the temp file for javac source
     sep = os.sep
     src = '.'+sep+'src'+sep
@@ -21,11 +17,10 @@ if javac:
         for r, dirs, _ in os.walk(src):
             for d in dirs:
                 files = [r+sep+d+sep+f for f in os.listdir(r+sep+d+sep) if f.endswith('.java')]
-                write = write + (' '.join(files))
-                write = write + ' '
+                write = write + ' '.join(files) + ' '
         temp.write(write)
     # fork off javac
     if os.fork() == 0:
-        os.execl(javac, "javac", '-cp', src, '-d', out, '@sources.txt')
-else:
+        os.execlp('javac', 'javac', '-cp', src, '-d', out, '@sources.txt')
+except OSError:
     print('javac not found in path, unable to automatically build')

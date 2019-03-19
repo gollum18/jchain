@@ -24,3 +24,9 @@ hs_err_pid*
 
 # ignore swap files
 *.swp
+
+# ignore out directory
+out/
+
+# ignore the source file
+sources.txt
