@@ -4,6 +4,10 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * Contains both static and non-static (singleton) helper methods that 
+ * provide useful functionality for the blockchain.
+ */
 public class BCUtil {
 
     private final static char[] mHexArray = "0123456789ABCDEF".toCharArray();
