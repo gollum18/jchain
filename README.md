@@ -31,7 +31,7 @@ The above command may not work in the future. It just coincidentally ocmpiles su
 ## Execution Instructions
 To execute the `TestBC` class, cd into the jchain directory in out and enter the following command
 
-`java jchain.TestBC`
+`java -cp ./out jchain.TestBC`
 
 ---
 ## Sample Output
