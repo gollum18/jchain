@@ -10,11 +10,22 @@ import java.security.NoSuchAlgorithmException;
  */
 public class BCUtil {
 
+    // constants
+
     private final static char[] mHexArray = "0123456789ABCDEF".toCharArray();
     private final static BCUtil mInstance = new BCUtil();
 
+    // fields
+
     private MessageDigest mDigest;
 
+    // constructors
+
+    /**
+     * Singleton constructor that returns an instance of a BCUtil object with a SHAR-256 digestor.
+     * Will error out of the JVM if the SHA-256 hashing algorithm is not available on the local platform.
+     * @return An instance of the BCUtil class.
+     */
     private BCUtil() {
         // try to get a SHA-256 MessageDigest
         try {
@@ -28,6 +39,12 @@ public class BCUtil {
         }
     }
 
+    // methods
+
+    /**
+     * Returns a singleton instance of the BCUtil class, useful for generating hashes.
+     * @return BCUtil A singleton instance of the BCUtil class.
+     */
     public static BCUtil getInstance() {
         return mInstance;
     }
