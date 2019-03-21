@@ -1,5 +1,6 @@
 package jchain.util;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -67,7 +68,7 @@ public class MerkleTree {
         if (mRoot == null) {
             mRoot = new MerkleNode(tx);
         } else {
-            if (mRoot.contains(tx)) {
+            if (contains(tx)) {
                 throw new IllegalArgumentException("Cannot add transaction! Transaction already in tree.");
             } mRoot.add(tx);
         }

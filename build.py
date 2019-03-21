@@ -25,9 +25,8 @@ import os
 
 try:
     # get the local path separator and build the src/out directories
-    sep = os.sep
-    src = '.'+sep+'src'+sep
-    out = '.'+sep+'out'+sep
+    src = 'src'
+    out = 'out'
     # make the output directory if it does not exist
     if not os.path.exists(out):
         os.mkdir(out)
@@ -39,7 +38,7 @@ try:
         for r, dirs, _ in os.walk(src):
             for d in dirs:
                 # filter out all of the files that are not java files
-                files = [r+sep+d+sep+f for f in os.listdir(r+sep+d+sep) if f.endswith('.java')]
+                files = [os.path.join(r, d, f) for f in os.listdir(os.path.join(r, d)) if f.endswith('.java')]
                 write = write + ' '.join(files) + ' '
         sources.write(write)
     # replace the script with javac passing in the src/out variables we got earlier
