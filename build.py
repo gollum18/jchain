@@ -42,10 +42,9 @@ try:
                 files = [r+sep+d+sep+f for f in os.listdir(r+sep+d+sep) if f.endswith('.java')]
                 write = write + ' '.join(files) + ' '
         sources.write(write)
-    # fork off javac passing in the src/out variables we got earlier
+    # replace the script with javac passing in the src/out variables we got earlier
     #   and pointing it to sources.txt
-    if os.fork() == 0:
-        os.execlp('javac', 'javac', '-cp', src, '-d', out, '@sources.txt')
+    os.execlp('javac', 'javac', '-cp', src, '-d', out, '@sources.txt')
 except OSError:
     # print an error if execlp (or any other os method) fails
     print('There was an issue calling javac!')

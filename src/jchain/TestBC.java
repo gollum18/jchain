@@ -62,12 +62,12 @@ public class TestBC {
         chain.addBlock(new Block(txList, chain.getLeadBlock().getHash()));
 
         // get the block at height 1 and print it
-        System.out.println("Testing function 1...");
+        System.out.println("Retrieving the block at height 1:");
         System.out.println(chain.getBlockByHeight(1));
 
         // get a random transaction from the chain and print it
-        System.out.println("Testing function 2...");
         int pos = (int)(Math.floor(Math.random()*txArray.length));
+        System.out.println("Getting tx with hash: " + txArray[pos].getHash() + " from the chain:");
         String txHash = txArray[pos].getHash();
         System.out.println(chain.getTransactionByHash(txHash));
     }
