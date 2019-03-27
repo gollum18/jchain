@@ -30,8 +30,6 @@ try:
     # make the output directory if it does not exist
     if not os.path.exists(out):
         os.mkdir(out)
-    # get all of the java file paths from all the subdirectories
-    dirs = os.walk(src)
     with open('sources.txt', 'w') as sources:
         write = ''
         # step through the directories
