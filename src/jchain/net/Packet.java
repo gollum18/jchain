@@ -13,14 +13,32 @@ package jchain.net;
  */
 public class Packet {
 
+    public static final int VERSION_NUMBER = 1;
+
     /**
      * Packets can be one of various types that indicate the actions 
      * nodes must take when receiving the packet. There are various 
      * types of packets; they wil be detailed when I finalize the 
      * packet design.
+     *
+     * There are currently four different types of Packets in jchain:
+     *  BLOCK Packets: These packets contain a block.
+     *  BLOCK_HEADER: These packets contain a block header.
+     *  TX Packets: These packets contain a transaction.
+     *  HEARTBEAT: These packets are sent by Nodes to inform their 
+     *      neighbors that they are still up (a concept I stole from GFS/HDFS)
+     *
+     * A Node is considered `dead` by a neighbor if the neighboring node
+     * does not receive a HEARTBEAT packet from a node within a certain 
+     * period of time. A `dead` node is removed from the neighbors 
+     * list of peers and will no longer receive broadcasts from that 
+     * neighbor.
      */
     public enum Types {
-
+        BLOCK,
+        BLOCK_HEADER,
+        TX,
+        HEARTBEAT
     }
 
 }

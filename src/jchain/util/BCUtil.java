@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import jchain.bc.Transaction;
+
 /**
  * Contains both static and non-static (singleton) helper methods that 
  * provide useful functionality for the blockchain.

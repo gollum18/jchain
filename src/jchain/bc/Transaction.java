@@ -197,6 +197,18 @@ public class Transaction {
     }
 
     /**
+     * Determines if the transaction is well-formed.
+     * Transactions that are not well-formed will not be broadcast to the 
+     * network.
+     * @return True if the transaction is well-formed, false otherwise.
+     */
+    public boolean isWellFormed() {
+        // TODO: Determine if the transaction is well-formed
+
+        return true;
+    }
+
+    /**
      * Prints the transaction to standard out.
      */
     public void printTransaction() {
