@@ -1,3 +1,3 @@
-public Interface Hashable {
+public interface Hashable {
     String computeHash();
 }
