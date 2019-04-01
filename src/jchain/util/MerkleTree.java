@@ -28,11 +28,11 @@ public class MerkleTree<T implements Hashable> {
      * @param tx The transaction to store in the root of the tree.
      * @return An instance of the MerkleTree class.
      */
-    public MerkleTree(Transaction tx) {
-        if (tx == null) {
+    public MerkleTree(T hashable) {
+        if (hashable == null) {
             throw new IllegalArgumentException();
         }
-        mRoot = new MerkleNode(tx);
+        mRoot = new MerkleNode(hashable);
     }
 
     /**
@@ -41,11 +41,11 @@ public class MerkleTree<T implements Hashable> {
      * @param txList A collection containing Transaction objects.
      * @return An instance of the MerkleTree class.
      */
-    public MerkleTree(Collection<Transaction> txList) {
-        if (txList == null) {
+    public MerkleTree(Collection<T> hashableList) {
+        if (hashableList == null) {
             throw new IllegalArgumentException();
         }
-        Iterator<Transaction> iterator = txList.iterator();
+        Iterator<Transaction> iterator = hashableList.iterator();
         if (!iterator.hasNext()) {
             throw new IllegalArgumentException();
         }
