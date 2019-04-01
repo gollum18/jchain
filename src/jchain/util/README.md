@@ -9,6 +9,9 @@ Most of these classes are not meant to be directly instantiated, rather they usu
 ### BCUtil
 This class provides helper functions for the various classes in the blockchain such as computing hashes and converting a hash to a hexstring (actually at this time, thats all that it implements). This class is a singleton so we do not have to keep initializing new MessageDigest objects for hash generation (although in reality, I do not know if this will work well in a P2P environmennt).
 
+### Hashable
+This interface requires implementors to implement the computeHash() method required of any class that generates a SHA-256 double hash.
+
 ### MerkleTree
 This class provides implements a recursive MerkleTree data structure. A MerkleTree or HashTree is a binary tree data structure used to generate cryptographically resilient hashes. In the context of a blockchain, it is used to store transactions in order to generate the Merkle root hash used in block hash calculations. There is no explicit requirement that Merkle trees be balanced, however I have tried to implement this tree in such a manner that it is self-balancing (as it is my (completely untested) assumption that a fully balanced Merkle tree produces better hashes than an unbalanced Merkle tree).
 
