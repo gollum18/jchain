@@ -1,9 +1,15 @@
 package jchain.bc;
 
+import java.util.Collection;
+
+import jchain.bc.Transaction;
+import jchain.util.BCUtil;
+import jchain.util.Hashable;
+
 /**
  * Represents a block header in a blockchain system.
  */
-public class Header {
+public class Header implements Hashable {
 
     // constants
 
@@ -16,47 +22,27 @@ public class Header {
     private int nBits;
     private int nNonce = 0;
     private String sPrevBlockHash;
+    private String sHash;
 
     // constructors
 
     /**
-     * Returns an instance of a Header object that points to the indicated 
-     * previous block hash, and contains the specified amount of bits.
-     * @param prevBlockHash A SHA-256 double hash hexstring representing
-     * the previous block hash.
-     * @param bits The number of bits contained in the block.
+     * Returns an instance of a block header constructed from the 
+     * previous block hash and the transactions list.
+     * @param prevBlockHash The hash of the previous block in the chain.
+     * @param txList A list of transactions.
      */
-    public Header(String prevBlockHash, int bits) {
-        this(prevBlockHash, bits, VERSION_NUMBER);
-    }
-
-    /**
-     * Returns an instance of a Header object that points to the indicated
-     * previous block hash, contains the specified amount of bits, and has 
-     * the indicated version number.
-     * @param prevBlockHash A SHA-256 double hash hexstring representing
-     * the previous block hash.
-     * @param bits The number of bits contained in the block.
-     * @param version The blocks version number.
-     */
-    public Header(String prevBlockHash, int bits, int version) {
-        // the hash must be valid
-        if (prevBlockHash == null || 
-                prevBlockHash.length() == 0) {
-            throw new IllegalArgumentException();
+    public Header(String prevBlockHash, Collection<Transaction> txList) {
+        if (prevBlockHash == null || prevBlockHash.length() == 0) {
+            throw new IllegalArgumentException("Error: Cannot create block header without a previous block hash!");
         }
-        // blocks cannot be empty
-        if (bits <= 0) {
-            throw new IllegalArgumentException();
-        }
-        // one is the original version number
-        if (version < 1) {
-            throw new IllegalArgumentException();
+        if (txList == null || txList.size() == 0) {
+            throw new IllegalArgumentException("Error: Cannot create block header without a list of transactions!");
         }
         sPrevBlockHash = prevBlockHash;
-        nBits = bits;
-        nVersionNumber = version;
-        nTimestamp = (int) (System.currentTimeMillis() / 1000);
+        nBits = BCUtil.bits(txList);
+        nVersionNumber = nVersionNumber;
+        nTimestamp = BCUtil.now();
     }
 
     // accessors/mutators
@@ -94,6 +80,29 @@ public class Header {
      */
     public String getPreviousBlockHash() {
         return sPrevBlockHash;
+    }
+
+    /**
+     * Computes the block header hash.
+     */
+    public String computeHash() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getVersionNumber());
+        sb.append(getTimestamp());
+        sb.append(getBits());
+        sb.append(getNonce());
+        sb.append(getPreviousBlockHash());
+        return BCUtil.getInstance().doubleHash(sb.toString());
+    }
+
+    /**
+     * Gets the hash of the block header.
+     */
+    public String getHash() {
+        if (sHash == null || sHash.length() == 0) {
+            sHash = computeHash();
+        }
+        return sHash;
     }
 
 }

@@ -9,7 +9,7 @@ import jchain.util.BCUtil;
 import jchain.util.Hashable;
 
 // todo: convert this to a generic structure so I can use it in other projects
-public class MerkleTree<T implements Hashable> {
+public class MerkleTree<T extends Hashable> {
 
     // fields
 
@@ -18,22 +18,9 @@ public class MerkleTree<T implements Hashable> {
     // constructors
 
     /**
-     * Return an instance of a empty MerkleTree.
+     * Empty constructor.
      */
     public MerkleTree() {}
-
-    /**
-     * Return an instance of a MerkleTree containing a single 
-     *  transaction.
-     * @param tx The transaction to store in the root of the tree.
-     * @return An instance of the MerkleTree class.
-     */
-    public MerkleTree(T hashable) {
-        if (hashable == null) {
-            throw new IllegalArgumentException();
-        }
-        mRoot = new MerkleNode(hashable);
-    }
 
     /**
      * Return an instance of a MerkleTree containing all of the 
@@ -45,7 +32,7 @@ public class MerkleTree<T implements Hashable> {
         if (hashableList == null) {
             throw new IllegalArgumentException();
         }
-        Iterator<Transaction> iterator = hashableList.iterator();
+        Iterator<T> iterator = hashableList.iterator();
         if (!iterator.hasNext()) {
             throw new IllegalArgumentException();
         }
@@ -63,13 +50,13 @@ public class MerkleTree<T implements Hashable> {
      * @exception IllegalArgumentException If the transaction is already contained in the tree.
      */
     public void add(T hashable) {
-        if (tx == null) {
+        if (hashable == null) {
             throw new NullPointerException();
         }
         if (mRoot == null) {
             mRoot = new MerkleNode(hashable);
         } else {
-            if (contains(hashable)) {
+            if (contains(hashable.getHash())) {
                 throw new IllegalArgumentException("Cannot add transaction! Transaction already in tree.");
             } mRoot.add(hashable);
         }
@@ -107,12 +94,13 @@ public class MerkleTree<T implements Hashable> {
     }
 
     /**
-     * Determines if the tree contains the specified transaction or not.
-     * @param tx A Transaction object.
-     * @return True if the tree contains the transaction, false otherwise.
+     * Gets the number of items stored in the tree.
+     * @return The number of items in the tree.
      */
-    public boolean contains(T hashable) {
-        return contains(hashable.getHash());
+    public int count() {
+        if (mRoot == null) {
+            return 0;
+        } return mRoot.count();
     }
 
     /**
@@ -133,28 +121,6 @@ public class MerkleTree<T implements Hashable> {
         if (mRoot == null) {
             throw new NullPointerException();
         } return mRoot.get(hash);
-    }
-
-    /**
-     * Rebuilds a MerkleTree given a List of transactions.
-     * @param txList A List<Transaction> of transactions.
-     * @exception UnsupportedOperationException Thrown if called, this 
-     *  method is not implemented yet.
-     */
-    public static MerkleTree load(List<T> hashables) {
-        // todo: implement loading a merkle tree given a 
-        //   collection
-        throw new UnsupportedOperationException();        
-    }
-
-    /**
-     * Persists the MerkleTree to local storage.
-     * @exception UnsupportedOperationException Thrown if called, this 
-     *  method is not implemented yet.
-     */
-    public void save() {
-        // todo: implement writing the tree to file
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -301,6 +267,28 @@ public class MerkleTree<T implements Hashable> {
         } // end contains
 
         /**
+         * Gets the number of items stored in the sub-tree.
+         * @return The number of items stored in the sub-tree.
+         */
+        public int count() {
+            // check for a leaf node
+            if (mHashable != null) {
+                return 1;
+            }
+            int left = 0, right = 0;
+            // get count of left if it exists
+            if (mLeft != null) {
+                return mLeft.count();
+            }
+            // get count of right if it exists
+            if (mRight != null) {
+                return mRight.count();
+            }
+            // return the sum of the left and right subtrees
+            return left + right;
+        }
+
+        /**
          * Attempts to get a transaction from the tree using the 
          *   transaction hash.
          * @param txHash A SHA-256 double hash hexstring.
@@ -319,10 +307,10 @@ public class MerkleTree<T implements Hashable> {
             // otherwise we are at an internal node
             else {
                 // try the left sub-tree
-                Hashable hashable = null;
+                T hashable = null;
                 if (mLeft != null) {
-                    tx = mLeft.get(hash);
-                    if (tx != null) {
+                    hashable = mLeft.get(hash);
+                    if (hashable != null) {
                         if (hashable.getHash().equals(hash)) {
                             return hashable;
                         }
