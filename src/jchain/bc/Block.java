@@ -7,25 +7,26 @@ import java.util.Objects;
 import jchain.bc.Header;
 import jchain.bc.Transaction;
 import jchain.util.BCUtil;
+import jchain.util.Hashable;
 import jchain.util.MerkleTree;
 
 /**
  * Implements a Block in a blockchain system.
  */
-public class Block {
+public class Block implements Hashable {
 
     // constants
 
     // predetermined 'secret' magic number
     private static final int MAGIC_NUMBER = 0xD8B4BEF9;
-    // block size is measured in bytes (2 million bytes)
-    public static final int BLOCK_SIZE = 2000000;
+    // block size is measured in bits (16 million bits)
+    public static final int BLOCK_SIZE = 16000000;
 
     // fields
 
     private Header mBlockHeader;
     private int nTransactionCount = 0;
-    private MerkleTree mTransactions;
+    private MerkleTree<Transaction> mTransactions;
     private String sHash;
 
     // constructors
@@ -37,40 +38,25 @@ public class Block {
      * Null transactions in the collection are <u><b>NOT</b></u> added to 
      * the block, they are instead skipped over and a warning is printed to 
      * standard out.
-     * @param txList A collection of transactions.
      * @param prevBlockHash The lead blocks hash.
+     * @param txList A collection of transactions.
      * @exception IllegalArgumentException If the txList is null or empty.
      * If the prevBlockHash is null or empty.
      */
-    public Block(Collection<Transaction> txList, 
-            String prevBlockHash) {
+    public Block(String prevBlockHash, Collection<Transaction> txList) {
         if (txList == null || txList.size() == 0) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Error: Cannot create block without transactions!");
         }
-        if (prevBlockHash == null || 
-                prevBlockHash.length() == 0) {
-            throw new IllegalArgumentException();
+        if (prevBlockHash == null || prevBlockHash.length() == 0) {
+            throw new IllegalArgumentException("Error: Cannot create block without a previous block hash!");
+        }
+        if (BCUtil.bits(txList) > BLOCK_SIZE) {
+            throw new IllegalArgumentException("Error: Cannot create block, block exceeds block size limit!");
         }
         // create the merkletree
-        mTransactions = new MerkleTree();
-        Iterator<Transaction> iterator = txList.iterator();
-        int size = 0; // measured in bytes, only measure tx sizes
-        // dont care about the header info, I'm not that precise
-        while (iterator.hasNext() && 
-                size < BLOCK_SIZE) {
-            Transaction tx = iterator.next();
-            if (tx == null) {
-                System.err.println("WARNING: Transaction not added, transaction was null!");
-                continue;
-            }
-            size += tx.bytes();
-            if (size < BLOCK_SIZE) {
-                mTransactions.add(tx);
-                nTransactionCount++;
-            }
-        }
-        // create the header
-        mBlockHeader = new Header(prevBlockHash, Math.floorDiv(size, 8));
+        mTransactions = new MerkleTree<Transaction>(txList);
+        mBlockHeader = new Header(prevBlockHash, txList);
+        nTransactionCount = mTransactions.count();
         // determine the block hash
         sHash = computeHash();
     }
@@ -124,11 +110,7 @@ public class Block {
         sb.append(MAGIC_NUMBER);
         sb.append(nTransactionCount);
         sb.append(mTransactions.computeHash());
-        sb.append(mBlockHeader.getVersionNumber());
-        sb.append(mBlockHeader.getTimestamp());
-        sb.append(mBlockHeader.getBits());
-        sb.append(mBlockHeader.getNonce());
-        sb.append(mBlockHeader.getPreviousBlockHash());
+        sb.append(getBlockHeader().computeHash());
         return BCUtil.getInstance().doubleHash(sb.toString());
     }
 

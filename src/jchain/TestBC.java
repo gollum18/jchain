@@ -38,7 +38,7 @@ public class TestBC {
         txList.add(genesisTx);
 
         // create the genesis block
-        Block genesisBlock = new Block(txList, genesisHash);
+        Block genesisBlock = new Block(genesisHash, txList);
         
         // create a chain instance passing in the initial block
         BC chain = new BC(genesisBlock);
@@ -50,7 +50,7 @@ public class TestBC {
         }
 
         // create the next block at height 1
-        chain.addBlock(new Block(txList, chain.getLeadBlock().getHash()));
+        chain.addBlock(new Block(chain.getLeadBlock().getHash(), txList));
 
         // prep for the next block
         txList.clear();
@@ -59,7 +59,7 @@ public class TestBC {
         }
 
         // create the next block at height 2
-        chain.addBlock(new Block(txList, chain.getLeadBlock().getHash()));
+        chain.addBlock(new Block(chain.getLeadBlock().getHash(), txList));
 
         // get the block at height 1 and print it
         System.out.println("Retrieving the block at height 1:");

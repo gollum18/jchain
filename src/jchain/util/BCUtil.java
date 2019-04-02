@@ -3,6 +3,8 @@ package jchain.util;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
+import java.util.Iterator;
 
 import jchain.bc.Transaction;
 
@@ -49,6 +51,26 @@ public class BCUtil {
      */
     public static BCUtil getInstance() {
         return mInstance;
+    }
+
+    /**
+     * Gets the number of bits comprising all transactions in a collection.
+     * Note: It is possible that some dangling bytes get cut off from 
+     * this calculation, but that is fine.
+     * @param txList A collection containing transactions.
+     * @return The number of bits across all transactions.
+     * @exception IllegalArgumentException If the txList is null or empty.
+     */
+    public static int bits(Collection<Transaction> txList) {
+        if (txList == null || txList.size() == 0) {
+            throw new IllegalArgumentException();
+        }
+        int bytes = 0;
+        Iterator<Transaction> itr = txList.iterator();
+        while (itr.hasNext()) {
+            bytes += itr.next().bytes();
+        }
+        return Math.floorDiv(bytes, 8);
     }
 
     /**
@@ -102,6 +124,14 @@ public class BCUtil {
         mDigest.update(hash);
         // convert the hash to a hexstring and return it
         return bytesToHex(mDigest.digest());
+    }
+
+    /**
+     * Gets the time using System.currentTimeMillis() as seconds. Not a 
+     * reliable time measurement.
+     */
+    public static int now() {
+        return (int) (System.currentTimeMillis() / 1000);
     }
 
 }

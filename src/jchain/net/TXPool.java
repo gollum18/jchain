@@ -25,9 +25,9 @@ public class TXPool {
 
     // Tracks the bucket that the transaction is in
     //  Prevents us from having to ask every confirmation map whether it contains the transaction
-    private mConfirmations HashMap<String, int>;
+    private HashMap<String, Integer> mConfirmations;
     // Where transactions are actually stored
-    private mTxPool HashMap<int, HashMap<String, Transaction>>;
+    private HashMap<Integer, HashMap<String, Transaction>> mTxPool;
     
     /**
     * Returns an instance of a TXPool object with the specified parameters

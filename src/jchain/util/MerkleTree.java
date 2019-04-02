@@ -6,9 +6,10 @@ import java.util.List;
 
 import jchain.bc.Transaction;
 import jchain.util.BCUtil;
+import jchain.util.Hashable;
 
 // todo: convert this to a generic structure so I can use it in other projects
-public class MerkleTree {
+public class MerkleTree<T extends Hashable> {
 
     // fields
 
@@ -17,22 +18,9 @@ public class MerkleTree {
     // constructors
 
     /**
-     * Return an instance of a empty MerkleTree.
+     * Empty constructor.
      */
     public MerkleTree() {}
-
-    /**
-     * Return an instance of a MerkleTree containing a single 
-     *  transaction.
-     * @param tx The transaction to store in the root of the tree.
-     * @return An instance of the MerkleTree class.
-     */
-    public MerkleTree(Transaction tx) {
-        if (tx == null) {
-            throw new IllegalArgumentException();
-        }
-        mRoot = new MerkleNode(tx);
-    }
 
     /**
      * Return an instance of a MerkleTree containing all of the 
@@ -40,11 +28,11 @@ public class MerkleTree {
      * @param txList A collection containing Transaction objects.
      * @return An instance of the MerkleTree class.
      */
-    public MerkleTree(Collection<Transaction> txList) {
-        if (txList == null) {
+    public MerkleTree(Collection<T> hashableList) {
+        if (hashableList == null) {
             throw new IllegalArgumentException();
         }
-        Iterator<Transaction> iterator = txList.iterator();
+        Iterator<T> iterator = hashableList.iterator();
         if (!iterator.hasNext()) {
             throw new IllegalArgumentException();
         }
@@ -61,16 +49,16 @@ public class MerkleTree {
      * @param tx A transaction object.
      * @exception IllegalArgumentException If the transaction is already contained in the tree.
      */
-    public void add(Transaction tx) {
-        if (tx == null) {
+    public void add(T hashable) {
+        if (hashable == null) {
             throw new NullPointerException();
         }
         if (mRoot == null) {
-            mRoot = new MerkleNode(tx);
+            mRoot = new MerkleNode(hashable);
         } else {
-            if (contains(tx)) {
+            if (contains(hashable.getHash())) {
                 throw new IllegalArgumentException("Cannot add transaction! Transaction already in tree.");
-            } mRoot.add(tx);
+            } mRoot.add(hashable);
         }
     }
 
@@ -96,22 +84,23 @@ public class MerkleTree {
      * @return True if the tree contains a transaction with the 
      * indicated transaction hash, false otherwise.
      */
-    public boolean contains(String txHash) {
-        if (txHash == null || txHash.length() == 0) {
+    public boolean contains(String hash) {
+        if (hash == null || hash.length() == 0) {
             throw new IllegalArgumentException();
         }
         if (mRoot == null) {
             throw new NullPointerException();
-        } return mRoot.contains(txHash);
+        } return mRoot.contains(hash);
     }
 
     /**
-     * Determines if the tree contains the specified transaction or not.
-     * @param tx A Transaction object.
-     * @return True if the tree contains the transaction, false otherwise.
+     * Gets the number of items stored in the tree.
+     * @return The number of items in the tree.
      */
-    public boolean contains(Transaction tx) {
-        return contains(tx.getHash());
+    public int count() {
+        if (mRoot == null) {
+            return 0;
+        } return mRoot.count();
     }
 
     /**
@@ -125,35 +114,13 @@ public class MerkleTree {
      * @return A transaction if one can be found with the given 
      *  transaction hash, null otherwise.
      */
-    public Transaction get(String txHash) {
-        if (txHash == null || txHash.length() == 0) {
+    public T get(String hash) {
+        if (hash == null || hash.length() == 0) {
             throw new IllegalArgumentException();
         }
         if (mRoot == null) {
             throw new NullPointerException();
-        } return mRoot.get(txHash);
-    }
-
-    /**
-     * Rebuilds a MerkleTree given a List of transactions.
-     * @param txList A List<Transaction> of transactions.
-     * @exception UnsupportedOperationException Thrown if called, this 
-     *  method is not implemented yet.
-     */
-    public static MerkleTree load(List<Transaction> txList) {
-        // todo: implement loading a merkle tree given a 
-        //   collection
-        throw new UnsupportedOperationException();        
-    }
-
-    /**
-     * Persists the MerkleTree to local storage.
-     * @exception UnsupportedOperationException Thrown if called, this 
-     *  method is not implemented yet.
-     */
-    public void save() {
-        // todo: implement writing the tree to file
-        throw new UnsupportedOperationException();
+        } return mRoot.get(hash);
     }
 
     /**
@@ -174,7 +141,7 @@ public class MerkleTree {
         
         // fields
 
-        private Transaction mTransaction;
+        private T mHashable;
         private MerkleNode mLeft;
         private MerkleNode mRight;
 
@@ -187,11 +154,11 @@ public class MerkleTree {
          * @exception NullPointerException If the Transaction is null.
          * @return An instance of a MerkleNode object.
          */
-        public MerkleNode(Transaction tx) {
-            if (tx == null) {
+        public MerkleNode(T hashable) {
+            if (hashable == null) {
                 throw new NullPointerException();
             }
-            mTransaction = tx;
+            mHashable = hashable;
         }
 
         // methods
@@ -203,8 +170,8 @@ public class MerkleTree {
          */
         public String computeHash() {
             // check for a leaf node
-            if (mTransaction != null) {
-                return mTransaction.getHash();
+            if (mHashable != null) {
+                return mHashable.getHash();
             }
             StringBuilder sb = new StringBuilder();
             if (mLeft != null) {
@@ -221,16 +188,16 @@ public class MerkleTree {
          * @param tx A transaction.
          * @exception IllegalArgumentException If the transaction is null.
          */
-        public void add(Transaction tx) {
+        public void add(T hashable) {
             // check the transaction
-            if (tx == null) {
+            if (hashable == null) {
                 throw new IllegalArgumentException();
             }
             // check for a leaf node
-            if (mTransaction != null) {
-                mLeft = new MerkleNode(mTransaction);
-                mRight = new MerkleNode(tx);
-                mTransaction = null;
+            if (mHashable != null) {
+                mLeft = new MerkleNode(mHashable);
+                mRight = new MerkleNode(hashable);
+                mHashable = null;
             }
             //  height to 'preserve' balance of tree
             else {
@@ -248,16 +215,16 @@ public class MerkleTree {
                 }
                 // add to the tree with the lesser height
                 if (left < right) {
-                    mLeft.add(tx);
+                    mLeft.add(hashable);
                 } else if (right < left) {
-                    mRight.add(tx);
+                    mRight.add(hashable);
                 } else {
                     // if the heights are the same pick a branch
                     //   at random
                     if (Math.random() <= 0.5) {
-                        mLeft.add(tx);
+                        mLeft.add(hashable);
                     } else {
-                        mRight.add(tx);
+                        mRight.add(hashable);
                     }
                 }
             }
@@ -270,14 +237,14 @@ public class MerkleTree {
          * @exception IllegalArgumentException If the transaction hash is 
          *  null or empty.
          */
-        public boolean contains(String txHash) {
+        public boolean contains(String hash) {
             // check txHash
-            if (txHash == null || txHash.length() == 0) {
+            if (hash == null || hash.length() == 0) {
                 throw new IllegalArgumentException();
             }
             // check for a leaf node
-            if (mTransaction != null) {
-                if (mTransaction.getHash().equals(txHash)) {
+            if (mHashable != null) {
+                if (mHashable.getHash().equals(hash)) {
                     return true;
                 } return false;
             }
@@ -286,12 +253,12 @@ public class MerkleTree {
                 // try the left sub-tree
                 boolean left = false;
                 if (mLeft != null) {
-                    left = mLeft.contains(txHash);
+                    left = mLeft.contains(hash);
                 }
                 // try the right sub-tree
                 boolean right = false;
                 if (mRight != null) {
-                    right = mRight.contains(txHash);
+                    right = mRight.contains(hash);
                 }
                 // only one needs to be true to indicate we 
                 //   found the a node with the txhash
@@ -300,39 +267,61 @@ public class MerkleTree {
         } // end contains
 
         /**
+         * Gets the number of items stored in the sub-tree.
+         * @return The number of items stored in the sub-tree.
+         */
+        public int count() {
+            // check for a leaf node
+            if (mHashable != null) {
+                return 1;
+            }
+            int left = 0, right = 0;
+            // get count of left if it exists
+            if (mLeft != null) {
+                return mLeft.count();
+            }
+            // get count of right if it exists
+            if (mRight != null) {
+                return mRight.count();
+            }
+            // return the sum of the left and right subtrees
+            return left + right;
+        }
+
+        /**
          * Attempts to get a transaction from the tree using the 
          *   transaction hash.
          * @param txHash A SHA-256 double hash hexstring.
          */
-        public Transaction get(String txHash) {
+        public T get(String hash) {
             // check the hash
-            if (txHash == null || txHash.length() == 0) {
+            if (hash == null || hash.length() == 0) {
                 throw new IllegalArgumentException();
             }
             // check for a leaf node
-            if (mTransaction != null) {
-                if (mTransaction.getHash().equals(txHash)) {
-                    return mTransaction;
+            if (mHashable != null) {
+                if (mHashable.getHash().equals(hash)) {
+                    return mHashable;
                 } return null;
             }
             // otherwise we are at an internal node
             else {
                 // try the left sub-tree
-                Transaction tx = null;
+                T hashable = null;
                 if (mLeft != null) {
-                    tx = mLeft.get(txHash);
-                    if (tx != null) {
-                        if (tx.getHash().equals(txHash)) {
-                            return tx;
+                    hashable = mLeft.get(hash);
+                    if (hashable != null) {
+                        if (hashable.getHash().equals(hash)) {
+                            return hashable;
                         }
                     }
                 }
                 // try the right sub-tree
                 if (mRight != null) {
-                    tx = mRight.get(txHash);
-                    if (tx != null) {
-                        if (tx.getHash().equals(txHash)) {
-                            return tx;
+                    hashable = mRight.get(hash);
+                    if (hashable != null) {
+                        if (hashable.getHash().equals(hash)) {
+                            return hashable;
                         }
                     }
                 }
@@ -365,8 +354,8 @@ public class MerkleTree {
          * @return A String representing the MerkleNode.
          */
         public String toString() {
-            if (mTransaction != null) {
-                return mTransaction.toString();
+            if (mHashable != null) {
+                return mHashable.toString();
             }
             StringBuilder sb = new StringBuilder();
             if (mLeft != null) {

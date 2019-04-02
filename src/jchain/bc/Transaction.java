@@ -5,8 +5,9 @@ import java.util.ListIterator;
 import java.util.Objects;
 
 import jchain.util.BCUtil;
+import jchain.util.Hashable;
 
-public class Transaction {
+public class Transaction implements Hashable {
 
     // constants
 
