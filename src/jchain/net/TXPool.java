@@ -35,7 +35,10 @@ public class TXPool {
     public TXPool() {
         mConfirmations = new HashMap<String, int>();
         mTxPool = new HashMap<int, HashMap<String, Transaction>>();
-        // TODO: Initialize a HashMap structure for each confirmation level in mTxPool 
+        // initialize pools for the transaction levels
+        for (int i = 0; i <= 6; i++) {
+            mTxPool.put(i, new HashMap<String, Transaction>());
+        }
     }
     
     /**
@@ -99,7 +102,7 @@ public class TXPool {
     */
     public Transaction getTransaction() {
         // TODO: Implement gettig a transaction from the tx pool using the above mechanism
-        return null;   
+        return null;
     }
 
 }
