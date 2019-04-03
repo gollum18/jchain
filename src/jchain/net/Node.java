@@ -21,6 +21,7 @@ import jchain.net.TXPool;
  */
 public class Node {
 
+    public static final int DEFAULT_BACKLOG = 10;
     public static final int MAX_PEERS = 50;
     public static final int SERVER_PORT = 61308;
 
@@ -54,12 +55,21 @@ public class Node {
 
     private class ServerThread extends Thread {
 
+        // contstants
+
         // stores addresses of peer nodes
         private static final Peer[] = new Peer[MAX_PEERS];
         // stores when the node came online
         private final long nOnTime = System.currentTimeMillis();
         // stores the amount of peers the node currently has
         private int nPeers = 0;
+
+        // fields
+
+        // the server socket hosted by the node
+        public static final ServerSocket mSocket = new ServerSocket(Node.SERVER_PORT, InetAddress.getLocalHost().getHostAddress());
+
+        // methods
 
         /**
          * Starts the server listening on port 61308.
