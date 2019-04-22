@@ -8,7 +8,7 @@ import jchain.util.BCUtil;
 
 /**
  * Test harness for mining. Implements the Publisher interface for pushing transactions to subscribed miners.
- * @author Christen Ford <c.t.ford@vikes.csuohio.edu>
+ * @author Christen Ford
  * @since 4/21/2019
  */
 public class MiningHarnessTest extends Thread 

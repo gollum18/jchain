@@ -6,7 +6,7 @@ import jchain.net.TxnMemoryPool;
 
 /**
  * Represents a miner in the jchain system.
- * @author Christen Ford <c.t.ford@vikes.csuohio.edu>
+ * @author Christen Ford
  * @since 4/15/2019
  */
 public class Miner implements Subscriber<Transaction> {

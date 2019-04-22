@@ -96,10 +96,8 @@ public class Transaction implements Hashable {
     }
     
     /**
-     * Return a ListIterator<String> object over the inputs of the 
-     * transaction.
-     * @return A ListIterator<String> object containing all the inputs
-     * in the transaction.
+     * Return a ListIterator object over the inputs of the transaction.
+     * @return A ListIterator object containing all the inputs in the transaction.
      */
     public ListIterator<String> getInputs() {
         return mInputs.listIterator();
@@ -108,8 +106,7 @@ public class Transaction implements Hashable {
     /**
      * Return a ListIterator<String> object over the outputs of the
      * transaction.
-     * @return A ListIterator<String> object containing all the outputs 
-     * in the transaction.
+     * @return A ListIterator<String> object containing all the outputs in the transaction.
      */
     public ListIterator<String> getOutputs() {
         return mOutputs.listIterator();

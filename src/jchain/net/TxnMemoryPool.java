@@ -8,6 +8,7 @@ import jchain.util.IllegalOperationException;
 
 /**
  * Used by miners to simulate an in-memory transaction pool.
+ * @author Christen Ford
  */
 public class TxnMemoryPool {
     
@@ -50,6 +51,7 @@ public class TxnMemoryPool {
 
     /**
      * Adds the transaction tx to the transaction pool onliy if the tx is valid, and the pool is not full.
+     * @param tx A transaction to add to the pool.
      */
     public void add(Transaction tx) throws IllegalOperationException {
         if (tx == null) {
@@ -63,6 +65,8 @@ public class TxnMemoryPool {
 
     /**
      * Determines if the transaction pool contains a specified transaction or not.
+     * @param A transaction to check for.
+     * @return True if the transaction is in the pool, false otherwise.
      */
     public boolean contains(Transaction tx) {
         return mTxPool.contains(tx);
@@ -70,6 +74,8 @@ public class TxnMemoryPool {
 
     /**
      * Return a random transaction in the list.
+     * @return A Transaction from the pool.
+     * @throws IllegalOperationException If the pool is empty.
      */
     public Transaction get() throws IllegalOperationException {
         if (mTxPool.size() == 0) {
