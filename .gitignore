@@ -1,3 +1,6 @@
+# ignore documentation directory
+docs/
+
 # Compiled class file
 *.class
 
