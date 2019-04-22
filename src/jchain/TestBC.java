@@ -7,6 +7,14 @@ import jchain.net.*;
 import jchain.tests.*;
 import jchain.util.*;
 
+/**
+ * Contains setup code for automatically launching and 
+ * running test against the jchain codebase.
+ * Note that test classes are stored in the 
+ * jchain.test package.
+ * @author Christen Ford
+ * @since 4/21/2019
+ */
 public class TestBC {
 
     /**

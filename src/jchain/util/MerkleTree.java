@@ -8,41 +8,62 @@ import jchain.bc.Transaction;
 import jchain.util.BCUtil;
 import jchain.util.Hashable;
 
-// todo: convert this to a generic structure so I can use it in other projects
+/**
+ * Defines a generic MerkleTree structure that generates  root hashes for use in cryptographic operations.
+ * I do not provide much documentation in this class as it is a dummy class. All the work is done in the MerkleNode class.
+ * @param T The type to store in the tree, must implement the Hashable interface.
+ * @author Christen Ford
+ */
 public class MerkleTree<T extends Hashable> {
 
-    // fields
+    //
+    // FIELDS
+    //
 
+    // The Merkle root node.
     private MerkleNode mRoot;
 
-    // constructors
+    //
+    // CONSTRUCTORS
+    //
 
     /**
-     * Empty constructor.
+     * Returns an instance of an EMPTY MerkleTree.
      */
     public MerkleTree() {}
 
     /**
-     * Return an instance of a MerkleTree containing all of the 
-     *  transactions in the given collection.
+     * Return an instance of a MerkleTree containing all of the transactions in the given collection.
      * @param txList A collection containing Transaction objects.
      * @return An instance of the MerkleTree class.
      */
     public MerkleTree(Collection<T> hashableList) {
+        // throw an exception if the list is null
         if (hashableList == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("ERROR: Cannot create MerkleTree, no list of transactions given!");
         }
+        // throw an exception if the lists iterator is empty
         Iterator<T> iterator = hashableList.iterator();
         if (!iterator.hasNext()) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("ERROR: Cannot create MerkleTree, list of transactions is empty!");
         }
+        // create the MerkleTree by iterating the iterator
         mRoot = new MerkleNode(iterator.next());
+        // the tree wil have at least one item in it
         while (iterator.hasNext()) {
-            mRoot.add(iterator.next());
+            T iterable = iterator.next();
+            // only add iterable if it isnt null, issue warning otherwise
+            if (iterable != null) {
+                mRoot.add(iterator.next());
+            } else {
+                System.err.println("WARNING: Iterable not added to MerkleTree, iterable was null!");
+            }
         }
     }
 
-    // methods
+    //
+    // METHODS
+    //
 
     /**
      * Adds a transaction to the MerkleTree.
@@ -56,6 +77,7 @@ public class MerkleTree<T extends Hashable> {
         if (mRoot == null) {
             mRoot = new MerkleNode(hashable);
         } else {
+            // check if the hashable is the root node of the tree, exception if it is, otherwise, let the root node handle adding it
             if (contains(hashable.getHash())) {
                 throw new IllegalArgumentException("Cannot add transaction! Transaction already in tree.");
             } mRoot.add(hashable);
@@ -134,18 +156,26 @@ public class MerkleTree<T extends Hashable> {
     }
 
     /**
-     * Internal class that does the heavy lifting of manipulating 
-     *  the MerkleTree.
+     * Internal class that does the heavy lifting of manipulating the MerkleTree.
+     * Internal value is the data type assigned to the MerkleTree class.
+     * @author Christen Ford
      */
     private class MerkleNode {
         
-        // fields
+        //
+        // FIELDS
+        //
 
+        // The value stored in this node, will be null if this is an internal node
         private T mHashable;
+        // The root of the left sub-tree
         private MerkleNode mLeft;
+        // The root of the right sub-tree
         private MerkleNode mRight;
 
-        // constructors
+        //
+        // CONSTRUCTORS
+        //
 
         /**
          * Returns an instance of a MerkleNode object containing the given
@@ -161,11 +191,12 @@ public class MerkleTree<T extends Hashable> {
             mHashable = hashable;
         }
 
-        // methods
+        //
+        // METHODS
+        //
 
         /**
-         * Computes a SHA-256 double hash hexstring representing the 
-         *  MerkleNode.
+         * Computes a SHA-256 double hash hexstring representing the MerkleNode.
          * @return A SHA-256 double hash hexstring.
          */
         public String computeHash() {
@@ -173,19 +204,22 @@ public class MerkleTree<T extends Hashable> {
             if (mHashable != null) {
                 return mHashable.getHash();
             }
+            // build the hash
             StringBuilder sb = new StringBuilder();
+            // compute the left and right sub-tree hashes, add them to the to-be-hashed stringbuilders content
             if (mLeft != null) {
                 sb.append(mLeft.computeHash());
             }
             if (mRight != null) {
                 sb.append(mRight.computeHash());
             }
+            // return the double hash to the caller
             return BCUtil.getInstance().doubleHash(sb.toString());
         }
 
         /**
-         * Adds a transaction to the MerkleTree.
-         * @param tx A transaction.
+         * Adds a hashable object to the MerkleTree. This add method prevents the MerkleTree from ever being skewed.
+         * @param hashable An object implementing the Hashable interface.
          * @exception IllegalArgumentException If the transaction is null.
          */
         public void add(T hashable) {
@@ -193,16 +227,16 @@ public class MerkleTree<T extends Hashable> {
             if (hashable == null) {
                 throw new IllegalArgumentException();
             }
-            // check for a leaf node
+            // check for a leaf node, convert this guy to an internal node and push down the left and right sub-trees
             if (mHashable != null) {
+                // left child will have the value of this node
                 mLeft = new MerkleNode(mHashable);
+                // right child will have the value that is being added
                 mRight = new MerkleNode(hashable);
                 mHashable = null;
             }
-            //  height to 'preserve' balance of tree
+            // otherwise if were at an internal node, 'preserve' balance of the tree using the height() method
             else {
-                // I'm not fond of this method
-                // todo: use another default for left and right
                 // get the height of the left sub-tree
                 int left = Integer.MAX_VALUE;
                 if (mLeft != null) {
@@ -221,7 +255,7 @@ public class MerkleTree<T extends Hashable> {
                 } else {
                     // if the heights are the same pick a branch
                     //   at random
-                    if (Math.random() <= 0.5) {
+                    if (Math.random() < 0.5) {
                         mLeft.add(hashable);
                     } else {
                         mRight.add(hashable);
@@ -231,11 +265,9 @@ public class MerkleTree<T extends Hashable> {
         } // end add
 
         /**
-         * Determines if this sub-tree contains a specified 
-         *   transaction or not based on the transaction hash.
-         * @param txHash A SHA-256 double hash hexstring.
-         * @exception IllegalArgumentException If the transaction hash is 
-         *  null or empty.
+         * Determines if this sub-tree contains a specified hashable or not based on the indicated hash.
+         * @param hash A SHA-256 double hash hexstring.
+         * @exception IllegalArgumentException If the hashable hash is null or empty.
          */
         public boolean contains(String hash) {
             // check txHash
@@ -267,8 +299,8 @@ public class MerkleTree<T extends Hashable> {
         } // end contains
 
         /**
-         * Gets the number of items stored in the sub-tree.
-         * @return The number of items stored in the sub-tree.
+         * Gets the number of hashables stored in the sub-tree.
+         * @return The number of hashables stored in the sub-tree.
          */
         public int count() {
             // check for a leaf node
@@ -289,8 +321,7 @@ public class MerkleTree<T extends Hashable> {
         }
 
         /**
-         * Attempts to get a transaction from the tree using the 
-         *   transaction hash.
+         * Attempts to get a hashable from the tree using the indicated hash.
          * @param txHash A SHA-256 double hash hexstring.
          */
         public T get(String hash) {
