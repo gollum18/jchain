@@ -86,6 +86,8 @@ public class TxnMemoryPool {
         // TODO: this should follow the rule of k confirmations
         int pos = BCUtil.getInstance().randRange(mTxPool.size());
         Transaction tx = mTxPool.get(pos);
+        // Nvm, this should be the case. It should not be a Miners responsiblity to maintain the pool
+        // Unfortunately, this is still bad, once a Transaction is removed from the pool, it is gone from the Miners POV
         mTxPool.remove(pos);
         return tx;
     }

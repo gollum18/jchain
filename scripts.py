@@ -19,8 +19,9 @@ def usage():
     print('-'*80)
     print('Usage: python scripts.py [script]')
     print('Valid scripts include:')
-    print('\tbuild')
-    print('\tdocgen')
+    print('\tbuild: builds jchain')
+    print('\tdocgen: compiles documentation')
+    print('\ttest: runs TestBC')
     print('-'*80)
 
 # walks the source tree and builds the sources.txt file
@@ -61,18 +62,29 @@ def docgen_script():
     walk_tree()
     os.execlp('javadoc', 'javadoc', '-cp', cp, '-d', doc_d, '@'+src_files)
 
+def test_script():
+    '''
+    Runs the test class inside the jchain src root directory.
+    '''
+    os.execlp('java' 'java', '-cp', class_d, 'jchain.TestBC')
+
 def invoke(script):
     '''
     Attempts to invoke the script specified by \'script\'.
     script: The script to execute.
     '''
     script = script.lower()
-    if script == 'build':
-        build_script()
-    elif script == 'docgen':
-        docgen_script()
-    else:
-        print('ERROR: Invalid command passed!')
+    try:
+        if script == 'build':
+            build_script()
+        elif script == 'docgen':
+            docgen_script()
+        elif script == 'test':
+            test_script()
+        else:
+            raise OSError('Specified script does not exist!')
+    except OSError as e:
+        print(e)
         usage()
         sys.exit(-1)
 
