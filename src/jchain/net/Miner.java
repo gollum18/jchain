@@ -1,13 +1,13 @@
 package jchain.net;
 
 import jchain.bc.Transaction;
-import jchain.net.TransactionListener;
+import jchain.net.Subscriber;
 import jchain.net.TxnMemoryPool;
 
 /**
  * Represents a miner in the jchain system.
  */
-public class Miner implements TransactionListener {
+public class Miner implements Subscriber<Transaction> {
     private TxnMemoryPool mPool;
 
     /**

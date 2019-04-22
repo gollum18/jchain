@@ -7,16 +7,18 @@ import jchain.net.*;
 import jchain.util.BCUtil;
 
 /**
- * Test harness for mining. Implements the TransactionPublisher interface for pushing transactions to subscribed miners.
+ * Test harness for mining. Implements the Publisher interface for pushing transactions to subscribed miners.
  */
-public class MiningHarnessTest extends Thread implements TransactionPublisher {
+public class MiningHarnessTest extends Thread 
+    implements Publisher<Transaction> {
 
     //
     // FIELDS
     //
 
     // Stores subscribed miners.
-    private LinkedList<TransactionListener> mListeners = new LinkedList<TransactionListener>();
+    private LinkedList<Subscriber<Transaction>> mSubscribers 
+        = new LinkedList<Subscriber<Transaction>>();
 
     // The number of transactions to generate in this test harness
     private int nTxAmt;
@@ -106,8 +108,9 @@ public class MiningHarnessTest extends Thread implements TransactionPublisher {
             throw new IllegalArgumentException("Error: Cannot push transaction, transaction is null!");
         }
         // Broadcasts the received transaction to each subscribed miner
-        for (TransactionListener listener : mListeners) {
-            listener.receive(tx);
+        for (Subscriber<Transaction> subscriber : 
+            mSubscribers) {
+            subscriber.receive(tx);
         }
     }
 
@@ -138,22 +141,26 @@ public class MiningHarnessTest extends Thread implements TransactionPublisher {
     }
 
     /**
-     * Subscribes the indicated listener to receive transactions.
-     * @param listener A listener to subscribe.
+     * Subscribes the indicated subscriber to receive transactions.
+     * @param listener A subscriber to subscribe.
      */
-    public void subscribe(TransactionListener listener) {
-        if (listener != null && !mListeners.contains(listener)) {
-            mListeners.add(listener);
+    public void subscribe(
+        Subscriber<Transaction> subscriber) {
+        if (subscriber != null && !
+            mSubscribers.contains(subscriber)) {
+            mSubscribers.add(subscriber);
         }
     }
 
     /**
-     * Unsubscribes the indicated listener from receiving transactions.
-     * @param listener A listener to unsubscribe.
+     * Unsubscribes the indicated subscriber from receiving transactions.
+     * @param subscriber A subscriber to unsubscribe.
      */
-    public void unsubscribe(TransactionListener listener) {
-        if (listener != null && mListeners.contains(listener)) {
-            mListeners.remove(listener);
+    public void unsubscribe(
+        Subscriber<Transaction> subscriber) {
+        if (subscriber != null && 
+            mSubscribers.contains(subscriber)) {
+            mSubscribers.remove(subscriber);
         }
     }
 
