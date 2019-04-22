@@ -11,11 +11,15 @@ import jchain.util.Hashable;
  */
 public class Header implements Hashable {
 
-    // constants
+    //
+    // CONSTANTS
+    //
 
     public static final int VERSION_NUMBER = 1;
 
-    // fields
+    //
+    // FIELDS
+    //
 
     private int nVersionNumber;
     private int nTimestamp;
@@ -24,7 +28,9 @@ public class Header implements Hashable {
     private String sPrevBlockHash;
     private String sHash;
 
-    // constructors
+    //
+    // CONSTRUCTORS
+    //
 
     /**
      * Returns an instance of a block header constructed from the 
@@ -45,10 +51,13 @@ public class Header implements Hashable {
         nTimestamp = BCUtil.now();
     }
 
-    // accessors/mutators
+    //
+    // ACCESSORS/MUTATORS
+    //
 
     /**
-     * Gets the version number of the block.
+     * Gets the version number of this block.
+     * @return The version number of this block.
      */
     public int getVersionNumber() {
         return nVersionNumber;
@@ -56,6 +65,7 @@ public class Header implements Hashable {
 
     /**
      * Gets the timestamp when this block was created.
+     * @return The timestamp when this block was created.
      */
     public int getTimestamp() {
         return nTimestamp;
@@ -63,6 +73,7 @@ public class Header implements Hashable {
 
     /**
      * Gets the total amount of bits comprising the block.
+     * @return The total bits in this block.
      */
     public int getBits() {
         return nBits;
@@ -70,6 +81,7 @@ public class Header implements Hashable {
 
     /**
      * Gets the nonce of this header.
+     * @return The nonce of this block header.
      */
     public int getNonce() {
         return nNonce;
@@ -77,13 +89,19 @@ public class Header implements Hashable {
 
     /**
      * Gets the previous block hash pointed to by this header.
+     * @return The hash of the previous block pointed to by this header.
      */
     public String getPreviousBlockHash() {
         return sPrevBlockHash;
     }
 
+    //
+    // METHODS
+    //
+
     /**
      * Computes the block header hash.
+     * @return The computed hash of this block header.
      */
     public String computeHash() {
         StringBuilder sb = new StringBuilder();
@@ -96,7 +114,8 @@ public class Header implements Hashable {
     }
 
     /**
-     * Gets the hash of the block header.
+     * Gets the hash of this block header.
+     * @return The hash of this block header.
      */
     public String getHash() {
         if (sHash == null || sHash.length() == 0) {

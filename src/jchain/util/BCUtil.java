@@ -131,21 +131,29 @@ public class BCUtil {
     }
 
     /**
-     * Gets the time using System.currentTimeMillis() as seconds. Not a 
-     * reliable time measurement.
+     * Gets the time using System.currentTimeMillis() as seconds. Not a reliable time measurement.
+     * @return An approximate current time in seconds.
      */
     public static int now() {
         return (int) (System.currentTimeMillis() / 1000);
     }
     
-    // method adapted from: https://stackoverflow.com/questions/13475388/generate-fixed-length-strings-filled-with-whitespaces
+    /**
+     * Returns a string padded to the specified width with the specified characters.
+     * @param width The width to pad the string to.
+     * @param fill The character to pad the string with.
+     * @param toPad The String to pad with characters.
+     * @return A String padded to the specified width with the specified characters.
+     */
     public static String padString(int width, char fill, String toPad) {
+        // method adapted from: https://stackoverflow.com/questions/13475388/generate-fixed-length-strings-filled-with-whitespaces
         return new String(new char[width - toPad.length()]).replace('\0', fill) + toPad;
     }
 
     /**
      * Gets a random number within the range [0, max).
      * @param max The maximum bound.
+     * @return A random number in the range [0, max).
      */
     public int randRange(int max) {
         try {
@@ -159,7 +167,7 @@ public class BCUtil {
      * Gets a random number within the range [min, max).
      * @param min The minimum bound.
      * @param max The maximum bound.
-     * @exception IllegalArgumentException If min >= max.
+     * @return A random number in the range [min, max).
      */
     public int randRange(int min, int max) {
         if (min >= max) {

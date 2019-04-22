@@ -34,8 +34,7 @@ public class MerkleTree<T extends Hashable> {
 
     /**
      * Return an instance of a MerkleTree containing all of the transactions in the given collection.
-     * @param txList A collection containing Transaction objects.
-     * @return An instance of the MerkleTree class.
+     * @param hashableList A collection containing Transaction objects.
      */
     public MerkleTree(Collection<T> hashableList) {
         // throw an exception if the list is null
@@ -66,9 +65,8 @@ public class MerkleTree<T extends Hashable> {
     //
 
     /**
-     * Adds a transaction to the MerkleTree.
-     * @param tx A transaction object.
-     * @exception IllegalArgumentException If the transaction is already contained in the tree.
+     * Adds an object implementing the Hashable interface to the MerkleTree.
+     * @param hashable A hashable object.
      */
     public void add(T hashable) {
         if (hashable == null) {
@@ -96,15 +94,9 @@ public class MerkleTree<T extends Hashable> {
     }
 
     /**
-     * Determines whether the tree contains a transaction with the 
-     *  specified transaction hash.
-     * @param txHash A SHA-256 double hash hextstring.
-     * @exception IllegalArgumentException If the transaction hash is 
-     *  null or empty.
-     * @exception NullPointerException If the root of the tree is 
-     *  null, i.e. if the tree is contains 0 transactions.
-     * @return True if the tree contains a transaction with the 
-     * indicated transaction hash, false otherwise.
+     * Determines whether the tree contains a hashable with the specified transaction hash.
+     * @param hash A SHA-256 double hash hextstring.
+     * @return True if the tree contains a hashable with the indicated hash, false otherwise.
      */
     public boolean contains(String hash) {
         if (hash == null || hash.length() == 0) {
@@ -126,15 +118,9 @@ public class MerkleTree<T extends Hashable> {
     }
 
     /**
-     * Attempts to retrieve a transaction from the tree using the 
-     *  transaction hash.
-     * @param txHash A SHA-256 double hash hexstring.
-     * @exception IllegalArgumentException If the transaction hash is 
-     *  null or empty.
-     * @exception NullPointerException If the root of the tree is null, 
-     * i.e. if the tree contains 0 transactions.
-     * @return A transaction if one can be found with the given 
-     *  transaction hash, null otherwise.
+     * Attempts to retrieve a hashable from the tree using the indicated hash.
+     * @param hash A SHA-256 double hash hexstring.
+     * @return A hashable if one can be found with the given hash, null otherwise.
      */
     public T get(String hash) {
         if (hash == null || hash.length() == 0) {

@@ -19,6 +19,7 @@ public class TestBC {
 
     /**
      * Runs the test class.
+     * @param args The arguments to passes to main.
      */
     public static void main(String[] args) {
         // test blockchain functionality

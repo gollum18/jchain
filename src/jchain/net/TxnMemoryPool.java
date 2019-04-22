@@ -52,6 +52,7 @@ public class TxnMemoryPool {
     /**
      * Adds the transaction tx to the transaction pool onliy if the tx is valid, and the pool is not full.
      * @param tx A transaction to add to the pool.
+     * @throws IllegalOperationException If the indicated transaction is null or the pool is full.
      */
     public void add(Transaction tx) throws IllegalOperationException {
         if (tx == null) {
@@ -65,7 +66,7 @@ public class TxnMemoryPool {
 
     /**
      * Determines if the transaction pool contains a specified transaction or not.
-     * @param A transaction to check for.
+     * @param tx A transaction to check for.
      * @return True if the transaction is in the pool, false otherwise.
      */
     public boolean contains(Transaction tx) {

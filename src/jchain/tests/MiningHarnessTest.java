@@ -32,6 +32,10 @@ public class MiningHarnessTest extends Thread
     // CONSTRUCTORS
     //
 
+    /**
+     * Creates an instance of a MiningHarnessTest that generates the indicated transactions.
+     * @param txAmt The amount of transactions to generate in the test harness.
+     */
     public MiningHarnessTest(int txAmt) {
         if (txAmt < 1) {
             throw new IllegalArgumentException("Error: Mining test harness must generate at least one transaction!");
@@ -45,17 +49,15 @@ public class MiningHarnessTest extends Thread
 
     /**
      * Gets the running status of this MiningHarnessTest.
+     * @return True if the harness is generating transactions, false otherwise.
      */
     public boolean isRunning() {
         return bRunning;
     }
 
     /**
-     * Updates the running status of this MiningHarnessTest. 
-     * NOTE: Once stopped, you must create a new MiningHarnessTest
-     * to be able to generate more transactions.
-     * @param running Whether the MiningHarnessTest is generating
-     * transactions or not.
+     * Updates the running status of this MiningHarnessTest.
+     * @param running Whether the MiningHarnessTest is generating transactions or not.
      */
     public void setRunning(boolean running) {
         bRunning = running;
@@ -67,6 +69,7 @@ public class MiningHarnessTest extends Thread
     
     /**
      * Generates a Transaction and returns it to the caller.
+     * @return A generated Transaction.
      */
     private Transaction generateTx() {
         // get a random amount of inputs
@@ -118,33 +121,33 @@ public class MiningHarnessTest extends Thread
 
     /**
      * Overrides run defined within the Thread class. 
-     * Sets up a miner, subscribes it, generates transactions, 
-     * transactions and broadcasts them to the subscribed listener.
+     * Sets up a miner, subscribes it, generates transactions, transactions and broadcasts them to the subscribed listener.
      */
     @Override
     public void run() {
         int txGenerated = 0;
         
-        // Once bRunning is stopped, it can never be enable again from within the context of this Thread, thats just how threads work
-        while (bRunning && txGenerated < nTxAmt) {
-            // Generate a transaction and send it to the subbed miners
-            push(generateTx());
+        while (txGenerated < nTxAmt) {
+            if (bRunning) {
+                // Generate a transaction and send it to the subbed miners
+                push(generateTx());
 
-            // Increment the number of generated transactions
-            txGenerated++;
+                // Increment the number of generated transactions
+                txGenerated++;
 
-            // sleep for 5 seconds
-            try {
-                sleep(5000);
-            } catch (InterruptedException ex) {
-                System.out.println(ex.getMessage());
+                // sleep for 5 seconds
+                try {
+                    sleep(5000);
+                } catch (InterruptedException ex) {
+                    System.out.println(ex.getMessage());
+                }
             }
         }
     }
 
     /**
      * Subscribes the indicated subscriber to receive transactions.
-     * @param listener A subscriber to subscribe.
+     * @param subscriber A subscriber to subscribe.
      */
     public void subscribe(
         Subscriber<Transaction> subscriber) {

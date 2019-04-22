@@ -56,6 +56,7 @@ public class BC {
      *  if there is no block found with the given hash.
      * @param hash A block hash (as a hexstring).
      * @return A block whose hash matches the indicated hash.
+     * @throws NoSuchBlockException If there is not block in the blockchain with the indicated hash.
      */
     public Block getBlockByHash(String hash) throws NoSuchBlockException {
         if (hash == null || hash.length() == 0) {
@@ -76,6 +77,7 @@ public class BC {
      * Tries to get a block from the blockchain by height.
      * @param height The height to retrieve at.
      * @return The block at the given height in the blockchain.
+     * @throws NoSuchBlockException If there is no block in the blockchain at the indicated height.
      */
     public Block getBlockByHeight(int height) throws NoSuchBlockException {
         // verify the height
@@ -103,8 +105,9 @@ public class BC {
 
     /**
      * Tries to get a transaction via its hash. Will return null if no transaction was found with the given hash.
-     * @param A SHA-256 double hash.
+     * @param hash A SHA-256 double hash.
      * @return A Transaction whose hash matches the given hash.
+     * @throws NoSuchTransactionException If there is no transaction in the blockchain with the indicated hash.
      */
     public Transaction getTransactionByHash(String hash) throws NoSuchTransactionException {
         if (hash == null || hash.length() == 0) {
