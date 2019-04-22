@@ -9,9 +9,7 @@ import jchain.util.BCUtil;
 /**
  * Test harness for mining. Implements the TransactionPublisher interface for pushing transactions to subscribed miners.
  */
-public class MiningTestHarnessThread 
-        extends Thread 
-        implements TransactionPublisher {
+public class MiningHarnessTest extends Thread implements TransactionPublisher {
 
     //
     // FIELDS
@@ -30,7 +28,7 @@ public class MiningTestHarnessThread
     // CONSTRUCTORS
     //
 
-    public MiningTestHarnessThread(int txAmt) {
+    public MiningHarnessTest(int txAmt) {
         if (txAmt < 1) {
             throw new IllegalArgumentException("Error: Mining test harness must generate at least one transaction!");
         }
@@ -42,17 +40,17 @@ public class MiningTestHarnessThread
     //
 
     /**
-     * Gets the running status of this MiningTestHarnessThread.
+     * Gets the running status of this MiningHarnessTest.
      */
     public boolean isRunning() {
         return bRunning;
     }
 
     /**
-     * Updates the running status of this MiningTestHarnessThread. 
-     * NOTE: Once stopped, you must create a new MiningTestHarnessThread
+     * Updates the running status of this MiningHarnessTest. 
+     * NOTE: Once stopped, you must create a new MiningHarnessTest
      * to be able to generate more transactions.
-     * @param running Whether the MiningTestHarnessThread is generating
+     * @param running Whether the MiningHarnessTest is generating
      * transactions or not.
      */
     public void setRunning(boolean running) {
@@ -123,7 +121,7 @@ public class MiningTestHarnessThread
         int txGenerated = 0;
         
         // Once bRunning is stopped, it can never be enable again from within the context of this Thread, thats just how threads work
-        while (bRunning && txGenerated < 91) {
+        while (bRunning && txGenerated < nTxAmt) {
             // Generate a transaction and send it to the subbed miners
             push(generateTx());
 

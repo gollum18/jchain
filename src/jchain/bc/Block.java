@@ -21,6 +21,8 @@ public class Block implements Hashable {
     private static final int MAGIC_NUMBER = 0xD8B4BEF9;
     // block size is measured in bits (16 million bits)
     public static final int BLOCK_SIZE = 16000000;
+    // max transactions in a block, may change to int/long in future
+    public static final short MAX_TXNS = 10;
 
     // fields
 
