@@ -5,6 +5,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Random;
 
 import jchain.bc.Transaction;
 
@@ -22,6 +23,7 @@ public class BCUtil {
     // fields
 
     private MessageDigest mDigest;
+    private Random mRandom;
 
     // constructors
 
@@ -41,6 +43,8 @@ public class BCUtil {
             ex.printStackTrace();
             System.exit(1);
         }
+        // initialize random to a seed based on time, should be good enough
+        mRandom = new Random((now() * 1000) % Long.MAX_VALUE);
     }
 
     // methods
@@ -132,6 +136,38 @@ public class BCUtil {
      */
     public static int now() {
         return (int) (System.currentTimeMillis() / 1000);
+    }
+    
+    // method adapted from: https://stackoverflow.com/questions/13475388/generate-fixed-length-strings-filled-with-whitespaces
+    public static String padString(int width, char fill, String toPad) {
+        return new String(new char[width - toPad.length()]).replace('\0', fill) + toPad;
+    }
+
+    /**
+     * Gets a random number within the range [0, max).
+     * @param max The maximum bound.
+     */
+    public int randRange(int max) {
+        try {
+            return randRange(0, max);
+        } catch (IllegalArgumentException ex) {
+            throw ex;
+        }
+    }
+
+    /**
+     * Gets a random number within the range [min, max).
+     * @param min The minimum bound.
+     * @param max The maximum bound.
+     * @exception IllegalArgumentException If min >= max.
+     */
+    public int randRange(int min, int max) {
+        if (min >= max) {
+            throw new IllegalArgumentException(String.format("Error: Cannot generate random number in range [%d, %d), min cannot be greater than or equal to max!", min, max));
+        }
+        // adding 1 to max - min causes this to produce numbers in the 
+        // range [min, max]
+        return mRandom.nextInt(max - min) + min;
     }
 
 }

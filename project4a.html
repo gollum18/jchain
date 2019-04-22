@@ -1,0 +1,137 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head> 
+<title>CIS 493/593 (Spring 2019): Project 4a</title> 
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /> 
+<link rel="STYLESHEET" href="../../class.css" type="text/css" /> 
+</head>
+<body>
+
+<h3> Project4: due on May 10th, 2019 at 11:59:59pm (EDT).</h3>
+
+<span style="font-weight: bold;"><br>
+I. Cryptocurrency and mining:</span><br>
+<br>
+This project is based on your project3 and you are expected to build your own 
+cryptocurrency and minig it. <br>
+<br> 
+
+Step1: <br>
+<br>
+
+First, you need to find a name for your new currency, such as "VikingCoin".  You cannot
+call it bitcoin or ether or any other existing cryptocurrency. You will create a Miner 
+class (see below).  Your Miner will take newly-created transanction and collect transaction
+into blocks. Each new block will include a "coin base" transaction that created
+VikingCoin (or whatever).<br>
+
+<br>
+You will need to denominate your cryptocurrency in 1/1000s (milli-coins).  
+So, as an example, 1 "VikingIron" is 0.001 "VikingCoin". <br>
+<br>
+
+You are to create a new class/structure called TxnMemoryPool, which can be any 
+type you wish, but a simple list of Transaction objects/structures will do 
+(order is unimportant), and this will store your transactions in memory during 
+processing.  Note you will no longer be automatically adding transactions 
+to blocks on creation of the transactions.  Rather, you will add them to the 
+TxnMemoryPool on creation.  This will simulate receiving them from the network. <br>
+<br>
+
+If you plan to use multiple threads, you should set up a method or function 
+that creates a new unique transaction every 1-10 seconds (if using threads, 
+you can make this decision as you progress through your testing) and adds 
+each new transaction to the TxnMemoryPool.  If you plan not to use multiple 
+threads, you may simply pre-create 91 new transactions and add them to your 
+TxnMemoryPool before beginning mining, which may prove easier.  You should 
+modify your blockchain code. There is a new MAX_TXNS field, which is the 
+maximum number of transactions per block.  You should set this to 10 
+(including the coinbase transaction).  So 9 transactions + 1 coinbase 
+transaction = 10 Max.<br>
+<br>
+
+Regarding the input and output, you could simply stuff a hash of the current 
+timestamp+some_randomly_generated_number into the inputs, and no one will be 
+the wiser.  For outputs, you are expected to create an Output class.
+
+<pre>
+Output
+-value:int
+-index:int
+-script:String
+</pre>
+
+Note that it is up to you to determine the best "decimal" format for your
+particular language.  That may be a Decimal object (serialized), or an int 
+(knowing that any Value is denominated in 1/1000s of your currency).  
+So if you placed a "1500" in your Value, that would mean 1.5 "VikingCoin".  
+At this point, you can put anything you want in the string Script.
+<br>
+<br>
+
+Step2:<br>
+
+You will create a new Miner class/function, that will go through the 
+TxnMemoryPool (which will eventually be growing at a steady rate), and 
+your Miner will attempt to create a block whose Blockhash is less than 
+the target you will set.  In this lab, our target will be calculated as:<br>
+<br>
+Target = coefficient*2^(0x8 * (exponent-0x3))<br>
+<br>
+
+Your Header.Bits (for all blocks) will default to 0x207fffff, with is the 
+difficulty bits for Regtest.  This means that your coefficient will be 
+'0x7fffff' and your exponent will be '0x20'.  Note that this is just 
+a starting default.  It's designed to make mining a slight challenge 
+but nothing you're going to spend eternity waiting on.  Feel free to 
+adjust your bits in order to play around with different levels of difficulty 
+if you get bored.  In our case for this assignment, you will not need to 
+worry about automatically adjusting the mining difficulty.  For example, 
+for a little more challenge, you could try the difficulty bits value 
+used on Testnet:  0x1d00ffff.  When you are done experimenting, you will 
+want to reset your Header.Bits to the default of 0x207fffff for final 
+submission. <br>
+<br>
+
+
+As you build your candidate blocks, keep in mind you will need a coinbase 
+transaction as the first transaction in each of the blocks.  
+This coinbase transaction will create an amount of your cryptocurrency 
+that is also up to you.  You could follow the bitcoin model and start 
+out with 50 bitcoins, or you could be more or less generous.  That's 
+entirely up to you. <br>
+<br>
+
+Step3:<br>
+<br>
+You want to write a test case in which you run your new Blockchain mining.
+You will create a new Blockchain and doing so you will create your genesis block.
+After mining the transactions in the TxnMemoryPool, print out the block height 
+of the tip of the chain.<br>
+<br>
+
+<span style="font-weight: bold;">
+<br>
+Submission:</span><br>
+
+<ol>
+<li>Create a folder and name it as your (Linux) user name, e.g., hwang. </li>
+<li>Copy all your files to the above folder.</li>
+<li>Compile a README file, provide the following information
+<ul>
+<li>Project description</li>
+<li>Provide an instruction how to compile and run your code, as well as a sample run.</li>
+<li>Existing bugs (things not finished)</li>
+</ul>
+</li>
+<li>Log in grail, go to the parent director of the folder you created, and run (suppose the your folder is "hwang")
+<pre>
+turnin -c cis593w -p proj4 hwang
+</pre>
+If there is no error message, your submission is successful.</li>
+<li>Your most recent submission will always automatically overwrite the previous one.</li>
+</li>
+</ol>
+
+</body>
+</hmtl>
+
