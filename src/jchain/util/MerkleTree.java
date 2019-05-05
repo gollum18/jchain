@@ -53,7 +53,7 @@ public class MerkleTree<T extends Hashable> {
             T iterable = iterator.next();
             // only add iterable if it isnt null, issue warning otherwise
             if (iterable != null) {
-                mRoot.add(iterator.next());
+                mRoot.add(iterable);
             } else {
                 System.err.println("WARNING: Iterable not added to MerkleTree, iterable was null!");
             }
