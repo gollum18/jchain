@@ -11,8 +11,7 @@ import jchain.util.BCUtil;
  * @author Christen Ford
  * @since 4/21/2019
  */
-public class MiningHarnessTest extends Thread 
-    implements Publisher<Transaction> {
+public class MiningHarnessTest implements Publisher<Transaction> {
 
     //
     // FIELDS
@@ -68,6 +67,34 @@ public class MiningHarnessTest extends Thread
     //
     
     /**
+     * Generates a random output amount for a given inputAmt and a 
+     * number of outputs.
+     */
+    private int getOutputAmt(int inputAmt, int outputs) throws Exception {
+        // check the inputs
+        if (inputAmt < 0) {
+            throw new Exception("Error: Input amount cannot be less than 0!");
+        } else if (inputAmt == 0) {
+            return 0;
+        }
+        // check the outputs
+        if (outputs <= 0) {
+            throw new Exception("Error: There must be at least one output!");
+        } else if (outputs == 1) {
+            // consume the entire input if there is only one output
+            return inputAmt;
+        } else {
+            int upper = inputAmt/outputs;
+            // return 1 if the upper bound is equal to the minimum output
+            if (upper == 1) {
+                return 1;
+            } else {
+                return BCUtil.getInstance().randRange(1, upper);
+            }
+        }
+    }
+    
+    /**
      * Generates a Transaction and returns it to the caller.
      * @return A generated Transaction.
      */
@@ -89,14 +116,23 @@ public class MiningHarnessTest extends Thread
         }
 
         // get a random amount of outputs
-        int nOutputs = BCUtil.getInstance().randRange(1, nInputs);
+        int nOutputs = 1;
+        if (nInputs > 1) {
+            BCUtil.getInstance().randRange(1, nInputs);
+        }
 
         // generate some outputs
         String[] outputs = new String[nOutputs];
         
         // generate the output content
         for (int i = 0; i < outputs.length; i++) {
-            int output = BCUtil.getInstance().randRange(1, inputAmt - (outputs.length - i));
+            int output = 1;
+            try {
+                output = getOutputAmt(inputAmt, outputs.length-i);
+            } catch (Exception e) {
+                System.out.println(String.format("An error has occured generating output amount for output %d, using the default output amount 1.", i+1));
+            }
+            inputAmt -= output;
             outputs[i] = String.valueOf(output);
         }
 
@@ -120,10 +156,8 @@ public class MiningHarnessTest extends Thread
     }
 
     /**
-     * Overrides run defined within the Thread class. 
      * Sets up a miner, subscribes it, generates transactions, transactions and broadcasts them to the subscribed listener.
      */
-    @Override
     public void run() {
         int txGenerated = 0;
         
@@ -135,12 +169,12 @@ public class MiningHarnessTest extends Thread
                 // Increment the number of generated transactions
                 txGenerated++;
 
-                // sleep for 5 seconds
+                // sleep for the specified transaction time
                 try {
-                    sleep(5000);
+                    Thread.sleep(Block.BLOCK_TIME/10);
                 } catch (InterruptedException ex) {
                     System.out.println(ex.getMessage());
-                }
+		}
             }
         }
     }

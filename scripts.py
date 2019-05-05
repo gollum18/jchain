@@ -10,19 +10,24 @@ import os
 import sys
 
 # constants, DO NOT change these!!
-cp = 'src'
-class_d = 'out'
-doc_d = 'docs'
+cp = os.path.join('.', 'src')
+class_d = os.path.join('.', 'out')
+doc_d = os.path.join('.', 'docs')
 src_files = 'sources.txt'
 
-def usage():
+def usage(err=None):
     print('-'*80)
-    print('Usage: python scripts.py [script]')
+    print('Usage: python scripts.py [arg]')
     print('Valid scripts include:')
     print('\tbuild: builds jchain')
     print('\tdocgen: compiles documentation')
     print('\ttest: runs TestBC')
+    print('Additionally passing -h or --help will show this message.')
     print('-'*80)
+    if err:
+        print('The following error has occurred:')
+        print(err)
+        print('-'*80)
 
 # walks the source tree and builds the sources.txt file
 def walk_tree(src=cp):
@@ -73,7 +78,6 @@ def invoke(script):
     Attempts to invoke the script specified by \'script\'.
     script: The script to execute.
     '''
-    script = script.lower()
     try:
         if script == 'build':
             build_script()
@@ -84,16 +88,16 @@ def invoke(script):
         else:
             raise OSError('Specified script does not exist!')
     except OSError as e:
-        print(e)
-        usage()
+        usage(e)
         sys.exit(-1)
 
 # entry point of the script
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        #debug, pull this out when done
-        print('argv contents: ', sys.argv)
-        #--------
         usage()
         sys.exit(-1)
+    arg = sys.argv[1].lower()
+    if arg == '-h' or arg == '--help':
+        usage()
+        sys.exit(0)
     invoke(sys.argv[1])

@@ -23,7 +23,7 @@ public class Header implements Hashable {
 
     private int nVersionNumber;
     private int nTimestamp;
-    private int nBits;
+    private static int nBits = 0x207fffff;
     private int nNonce = 0;
     private String sPrevBlockHash;
     private String sHash;
@@ -38,7 +38,7 @@ public class Header implements Hashable {
      * @param prevBlockHash The hash of the previous block in the chain.
      * @param txList A list of transactions.
      */
-    public Header(String prevBlockHash, Collection<Transaction> txList) {
+    public Header(String prevBlockHash, Collection<Transaction> txList, int nonce) {
         if (prevBlockHash == null || prevBlockHash.length() == 0) {
             throw new IllegalArgumentException("Error: Cannot create block header without a previous block hash!");
         }
@@ -46,8 +46,8 @@ public class Header implements Hashable {
             throw new IllegalArgumentException("Error: Cannot create block header without a list of transactions!");
         }
         sPrevBlockHash = prevBlockHash;
-        nBits = BCUtil.bits(txList);
-        nVersionNumber = nVersionNumber;
+        nVersionNumber = VERSION_NUMBER;
+        nNonce = nonce;
         nTimestamp = BCUtil.now();
     }
 
@@ -122,6 +122,17 @@ public class Header implements Hashable {
             sHash = computeHash();
         }
         return sHash;
+    }
+    
+    /**
+     * Returns the target value for mining.
+     * @return A target value for mining.
+     */
+    public static int target() {
+        String bitsHex = Integer.toHexString(nBits);
+        int coefficient = Long.valueOf(bitsHex.substring(2, bitsHex.length()), 16).intValue();
+        int exponent = Long.valueOf(bitsHex.substring(0, 2), 16).intValue();
+        return (int)Math.pow((coefficient*2), 0x8*(exponent-0x3));
     }
 
 }

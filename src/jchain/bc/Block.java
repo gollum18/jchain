@@ -23,6 +23,8 @@ public class Block implements Hashable {
     public static final int BLOCK_SIZE = 16000000;
     // max transactions in a block, may change to int/long in future
     public static final short MAX_TXNS = 10;
+    // the amount of time in between block generation
+    public static final long BLOCK_TIME = 5000;
 
     // fields
 
@@ -45,20 +47,24 @@ public class Block implements Hashable {
      * @exception IllegalArgumentException If the txList is null or empty.
      * If the prevBlockHash is null or empty.
      */
-    public Block(String prevBlockHash, Collection<Transaction> txList) {
+    public Block(Collection<Transaction> txList, 
+            Header blockHeader) {
+        // check the transaction lsit
         if (txList == null || txList.size() == 0) {
             throw new IllegalArgumentException("Error: Cannot create block without transactions!");
         }
-        if (prevBlockHash == null || prevBlockHash.length() == 0) {
-            throw new IllegalArgumentException("Error: Cannot create block without a previous block hash!");
-        }
+        // check the block size
         if (BCUtil.bits(txList) > BLOCK_SIZE) {
             throw new IllegalArgumentException("Error: Cannot create block, block exceeds block size limit!");
         }
+        // check the block header
+        if (blockHeader == null) {
+            throw new IllegalArgumentException("Error: Cannot create block, block header is null!");
+        }
         // create the merkletree
         mTransactions = new MerkleTree<Transaction>(txList);
-        mBlockHeader = new Header(prevBlockHash, txList);
         nTransactionCount = mTransactions.count();
+        mBlockHeader = blockHeader;
         // determine the block hash
         sHash = computeHash();
     }

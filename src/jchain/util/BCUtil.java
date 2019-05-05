@@ -56,7 +56,7 @@ public class BCUtil {
     public static BCUtil getInstance() {
         return mInstance;
     }
-
+    
     /**
      * Gets the number of bits comprising all transactions in a collection.
      * Note: It is possible that some dangling bytes get cut off from 

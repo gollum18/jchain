@@ -22,21 +22,14 @@ public class TestBC {
      * @param args The arguments to passes to main.
      */
     public static void main(String[] args) {
-        // test blockchain functionality
-        // TODO: This test case outputs the wrong stuff
-        try {
-            outputTest(testBlockchain(10), "Blockchain");
-        } catch (Exception ex) {
-            System.out.println(ex.toString());
-        }
         // test mining functionality
         // 1 miner, 91 transactions
-        // TODO: This test case is broken
-        /*try {
+        try {
             outputTest(testMining(1, 91), "Mining");
         } catch (Exception ex) {
-            System.out.println(ex.toString());
-        }*/
+            System.err.println(ex.toString());
+            System.err.println(ex.getMessage());
+        }
     }
     
     public static void outputTest(boolean testResult, String test) {
@@ -45,20 +38,6 @@ public class TestBC {
         } else {
             System.out.println("Test " + test + ": Failed!");
         }
-    }
-
-    public static boolean testBlockchain(int txAmt) {
-        if (txAmt <= 0) {
-            throw new IllegalArgumentException("Error: Cannot test blockchain functionality! Must specify at least one transaction be created!");
-        }
-        // Create the test and run it
-        BCFuncTest funcTest = new BCFuncTest(txAmt);
-        try {
-            funcTest.run();
-        } catch (Exception ex) {
-            return false;
-        }
-        return true;
     }
     
     public static boolean testMining(int miners, int txs) {
@@ -72,13 +51,16 @@ public class TestBC {
         MiningHarnessTest testHarness = new MiningHarnessTest(txs);
         // Subscribe the miner to receive transactions
         for (; miners > 0; miners--) {
+            Miner miner = new Miner();
             // all miners in this harness have the same pool size
-            testHarness.subscribe(new Miner());
+            testHarness.subscribe(miner);
         }
         // Runs the test harness
         try {
             testHarness.run();
         } catch (Exception ex) {
+            System.err.println(ex);
+            ex.printStackTrace();
             return false;
         }
         return true;
