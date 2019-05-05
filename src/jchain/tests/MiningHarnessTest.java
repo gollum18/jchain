@@ -122,7 +122,7 @@ public class MiningHarnessTest implements Publisher<Transaction> {
         }
 
         // generate some outputs
-        String[] outputs = new String[nOutputs];
+        Output[] outputs = new Output[nOutputs];
         
         // generate the output content
         for (int i = 0; i < outputs.length; i++) {
@@ -133,7 +133,7 @@ public class MiningHarnessTest implements Publisher<Transaction> {
                 System.out.println(String.format("An error has occured generating output amount for output %d, using the default output amount 1.", i+1));
             }
             inputAmt -= output;
-            outputs[i] = String.valueOf(output);
+            outputs[i] = new Output(output, i, "filler script");
         }
 
         // generate the transaction

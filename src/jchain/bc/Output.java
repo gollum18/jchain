@@ -75,6 +75,15 @@ public class Output implements Hashable {
     //
     // METHODS
     //
+    
+    /**
+     * Returns the number of bytes in the output.
+     */
+    public int bytes() {
+        // This assumes that Java integers are 32 bytes which is, 
+        //  of course, platform-dependent
+        return (32 * 2) + sScript.getBytes().length;
+    }
 
     /**
      * Overriden method provided by the Hashable interface.
@@ -101,6 +110,17 @@ public class Output implements Hashable {
         if (sHash == null || sHash.length() == 0) {
             sHash = computeHash();
         } return sHash;
+    }
+    
+    /**
+     * Returns a String representation of the Output.
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Value: ").append(nValue);
+        sb.append(", Index: ").append(nIndex);
+        return sb.toString();   
     }
 
 }

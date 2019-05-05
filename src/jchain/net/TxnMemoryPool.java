@@ -76,6 +76,13 @@ public class TxnMemoryPool {
     public synchronized boolean contains(Transaction tx) {
         return mTxPool.contains(tx);
     }
+    
+    /**
+     * Return the number of transactions in the pool.
+     */
+    public synchronized int count() {
+        return mTxPool.size();
+    }
 
     /**
      * Return a random transaction in the list.
@@ -89,7 +96,9 @@ public class TxnMemoryPool {
         // generate a random position to pull from, this is where we pay for using a linked list, although since the transaction pool is limited in size, it `should` be ok
         // TODO: this should follow the rule of k confirmations
         int pos = BCUtil.getInstance().randRange(mTxPool.size());
-        tx = mTxPool.get(pos);
+        Transaction tx = mTxPool.get(pos);
+        mTxPool.remove(tx);
+        return tx;
     }
     
     /**
@@ -101,79 +110,11 @@ public class TxnMemoryPool {
     }
 
     /**
-     * Attempts to remove transactions from the pool in batch.
-     * @param txs A batch of transactions to remove.
-     */
-    public synchronized void remove(Collection<Transaction> txs)
-            throws IllegalOperationException {
-        // throw errors if the pool is empty or the number of transactions to remove
-        //  is greater than the number of transactions in the pool 
-        if (isEmpty()) {
-            throw new IllegalOperationException();
-        }
-        if (txs == null || txs.length() == 0) {
-            throw new IllegalOperationException();
-        }
-        if (txs.length() > mPool.length()) {
-            throw new IllegalOperationException();
-        }
-        // attempt to remove all of the transactions in the pool that are also in txs
-        for (Transaction tx : txs) {
-            mPool.remove(tx);
-        }
-    }
-
-    /**
-     * Attempts to remove a transaction from the pool based on the transaciton 
-     * itself.
-     * @param tx A transaction object to remove.
-     */
-    public synchronized void remove(Transaction tx) 
-            throws IllegalOperationException {
-        if (isEmpty()) {
-            throw new IllegalOperationException();
-        }
-        if (tx == null) {
-            throw new IllegalOperationException();
-        }
-        // attempt to return an item from the list
-        mPool.remove(tx);
-    }
-
-    /**
-     * Attempts to remove a transaction from the pool based on its hash.
-     * @param hash A hash of a transaction to be removed.
-     */
-    public synchronized void remove(String hash) 
-            throws IllegalOperationException {
-        // throw an exception if the list is empty
-        if (isEmpty()) {
-            throw new IllegalOperationException();
-        }
-        if (hash == null || hash.length() == 0) {
-            throw new IllegalOperationException();
-        }
-        // attempt to return an item from the list
-        // TODO: This is slow, need to improve it somehow
-        int pos = -1;
-        for (Transaction tx : mPool) {
-            pos++;
-            if (tx.getHash().equals(hash)) {
-                break;
-            }
-        }
-        // only remove the item if it was found
-        if (pos > -1 && pos < items.length()) {
-            mPool.remove(pos);
-        }
-    }
-
-    /**
      * Returns the amount of transactions that can be stored in the pool.
      * @return int - The amount of transactions the pool can hold.
      */
     public int size() {
-        return nPoolSize();
+        return nPoolSize;
     }
 
 }

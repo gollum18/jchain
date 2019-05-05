@@ -19,7 +19,7 @@ public class Transaction implements Hashable {
     private int nInCounter;
     private int nOutCounter;
     private ArrayList<String> mInputs;
-    private ArrayList<String> mOutputs;
+    private ArrayList<Output> mOutputs;
     private String sHash;
 
     // constructurs
@@ -35,7 +35,7 @@ public class Transaction implements Hashable {
      * @exception IllegalArgumentException If inputs is null or empty. If 
      * outputs is null or empty.
      */
-    public Transaction(String[] inputs, String[] outputs) {
+    public Transaction(String[] inputs, Output[] outputs) {
         this(inputs, outputs, VERSION);
     }
 
@@ -48,7 +48,7 @@ public class Transaction implements Hashable {
      * format "{address}:{amount}".
      * @param versionNumber The Transaction version number.
      */
-    public Transaction(String[] inputs, String[] outputs, int versionNumber) {
+    public Transaction(String[] inputs, Output[] outputs, int versionNumber) {
         if (inputs == null || inputs.length == 0) {
             throw new IllegalArgumentException();
         }
@@ -65,7 +65,7 @@ public class Transaction implements Hashable {
             mInputs.add(input);
         }
         mOutputs = new ArrayList<>(outputs.length);
-        for (String output : outputs) {
+        for (Output output : outputs) {
             mOutputs.add(output);
         }
         sHash = computeHash();
@@ -108,7 +108,7 @@ public class Transaction implements Hashable {
      * transaction.
      * @return A ListIterator object containing all the outputs in the transaction.
      */
-    public ListIterator<String> getOutputs() {
+    public ListIterator<Output> getOutputs() {
         return mOutputs.listIterator();
     }
 
@@ -132,8 +132,8 @@ public class Transaction implements Hashable {
             size += input.getBytes().length;
         }
         // add the size of all outputs
-        for (String output : mOutputs) {
-            size += output.getBytes().length;
+        for (Output output : mOutputs) {
+            size += output.bytes();
         }
         // add in the size of the hash
         size += sHash.getBytes().length;
@@ -161,8 +161,8 @@ public class Transaction implements Hashable {
             sb.append(input);
         }
         sb.append(getOutputCount());
-        for (String output : mOutputs) {
-            sb.append(output);
+        for (Output output : mOutputs) {
+            sb.append(output.getHash());
         }
         return BCUtil.getInstance().doubleHash(sb.toString());
     }
@@ -227,7 +227,7 @@ public class Transaction implements Hashable {
             sb.append("   ").append(input).append("\n");
         }
         sb.append("Outputs:\n");
-        for (String output : mOutputs) {
+        for (Output output : mOutputs) {
             sb.append("   ").append(output).append("\n");
         }
         return sb.toString();

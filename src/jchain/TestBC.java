@@ -49,9 +49,21 @@ public class TestBC {
         }
         // Creates a transaction generator, testing 91 transactions
         MiningHarnessTest testHarness = new MiningHarnessTest(txs);
-        // Subscribe the miner to receive transactions
+        // create a test blockchain with a genesis block, each 
+        //  miner starts with the same blockchain
+        String[] testInputs = new String[] {
+            "A:10"
+        };
+        Output[] testOutputs = new Output[] {
+            new Output(10, 0, "genesis tx")
+        };
+        LinkedList<Transaction> testTxs = new LinkedList<>();
+        testTxs.add(new Transaction(testInputs, testOutputs));
+        Header testHeader = new Header("0000000000000000", testTxs, 0);
+        BC testBC = new BC(new Block(testTxs, testHeader));
+        // Subscribe the miners to receive transactions
         for (; miners > 0; miners--) {
-            Miner miner = new Miner();
+            Miner miner = new Miner(testBC);
             // all miners in this harness have the same pool size
             testHarness.subscribe(miner);
         }

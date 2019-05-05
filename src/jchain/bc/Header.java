@@ -1,5 +1,6 @@
 package jchain.bc;
 
+import java.math.BigInteger;
 import java.util.Collection;
 
 import jchain.bc.Transaction;
@@ -37,6 +38,7 @@ public class Header implements Hashable {
      * previous block hash and the transactions list.
      * @param prevBlockHash The hash of the previous block in the chain.
      * @param txList A list of transactions.
+     * @param nonce The nonce for the block.
      */
     public Header(String prevBlockHash, Collection<Transaction> txList, int nonce) {
         if (prevBlockHash == null || prevBlockHash.length() == 0) {
@@ -125,13 +127,23 @@ public class Header implements Hashable {
     }
     
     /**
+     * Returns the integer value of the headers SHA-256 hash for mining.
+     * @return An integer representing the headers hash.
+     */
+    public int getHashValue() {
+        // TODO: Implement converting the hash to an appropriate 
+        // integer value
+        return 0;
+    }
+    
+    /**
      * Returns the target value for mining.
      * @return A target value for mining.
      */
     public static int target() {
         String bitsHex = Integer.toHexString(nBits);
-        int coefficient = Long.valueOf(bitsHex.substring(2, bitsHex.length()), 16).intValue();
-        int exponent = Long.valueOf(bitsHex.substring(0, 2), 16).intValue();
+        int coefficient = Integer.parseInt(bitsHex.substring(2, bitsHex.length()), 16);
+        int exponent = Integer.parseInt(bitsHex.substring(0, 2), 16);
         return (int)Math.pow((coefficient*2), 0x8*(exponent-0x3));
     }
 
