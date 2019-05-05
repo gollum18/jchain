@@ -24,8 +24,10 @@ public class Header implements Hashable {
 
     private int nVersionNumber;
     private int nTimestamp;
-    private static int nBits = 0x207fffff;
+    private static int nBits = 0x207fffff;  // Little easier
+    //private static int nBits =  0x1d00ffff; // TestNet difficulty
     private int nNonce = 0;
+    private int nHashValue = 0;
     private String sPrevBlockHash;
     private String sHash;
 
@@ -51,6 +53,15 @@ public class Header implements Hashable {
         nVersionNumber = VERSION_NUMBER;
         nNonce = nonce;
         nTimestamp = BCUtil.now();
+        // generate the mining hash value
+        StringBuilder sb = new StringBuilder();
+        sb.append(prevBlockHash);
+        for (Transaction tx : txList) {
+            sb.append(tx.getHash());
+        }
+        sb.append(nonce);
+        byte[] bytes = BCUtil.getInstance().hash(sb.toString());
+        nHashValue = BCUtil.fromByteArray(bytes);
     }
 
     //
@@ -131,9 +142,7 @@ public class Header implements Hashable {
      * @return An integer representing the headers hash.
      */
     public int getHashValue() {
-        // TODO: Implement converting the hash to an appropriate 
-        // integer value
-        return 0;
+        return nHashValue;
     }
     
     /**
@@ -144,7 +153,9 @@ public class Header implements Hashable {
         String bitsHex = Integer.toHexString(nBits);
         int coefficient = Integer.parseInt(bitsHex.substring(2, bitsHex.length()), 16);
         int exponent = Integer.parseInt(bitsHex.substring(0, 2), 16);
-        return (int)Math.pow((coefficient*2), 0x8*(exponent-0x3));
+        int targetStr = (int)Math.pow((coefficient*2), 0x8*(exponent-0x3));
+        byte[] bytes = BCUtil.getInstance().hash(String.valueOf(targetStr));
+        return BCUtil.fromByteArray(bytes);
     }
 
 }

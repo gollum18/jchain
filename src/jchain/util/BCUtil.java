@@ -1,6 +1,7 @@
 package jchain.util;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
@@ -104,7 +105,7 @@ public class BCUtil {
      * @param value A string to double hash.
      * @return A double SHA-256 hash as a hexstring.
      */
-    public String doubleHash(String value) {
+    public synchronized String doubleHash(String value) {
         // make sure the digest is initialized, error out if its not
         if (mDigest == null) {
             System.err.println("Error: MessageDigest not initialized, cannot generate hashes!");
@@ -121,13 +122,38 @@ public class BCUtil {
         } catch (UnsupportedEncodingException ex) {
             System.err.println(ex.getMessage());
             ex.printStackTrace();
-            System.exit(0);
+            System.exit(-1);
         }
         // get the single hash, update the digest with it
         byte[] hash = mDigest.digest();
         mDigest.update(hash);
         // convert the hash to a hexstring and return it
         return bytesToHex(mDigest.digest());
+    }
+    
+    /**
+     * Converts an array of bytes to an integer value.
+     * @param bytes A byte array.
+     * @return An integer representing the byte array.
+     */
+    public static int fromByteArray(byte[] bytes) {
+        return ByteBuffer.wrap(bytes).getInt();
+    }
+    
+    /**
+     * Hashes a String value into a byte array using SHA-256.
+     * @param value A value to hash.
+     * @return A byte array representing a SHA-256 hash.
+     */
+    public synchronized byte[] hash(String value) {
+        try {
+            mDigest.update(value.getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException ex) {
+            System.err.println(ex.getMessage());
+            ex.printStackTrace();
+            System.exit(-1);
+        }
+        return mDigest.digest();
     }
 
     /**
@@ -155,7 +181,7 @@ public class BCUtil {
      * @param max The maximum bound.
      * @return A random number in the range [0, max).
      */
-    public int randRange(int max) {
+    public synchronized int randRange(int max) {
         try {
             return randRange(0, max);
         } catch (IllegalArgumentException ex) {
@@ -169,7 +195,7 @@ public class BCUtil {
      * @param max The maximum bound.
      * @return A random number in the range [min, max).
      */
-    public int randRange(int min, int max) {
+    public synchronized int randRange(int min, int max) {
         if (min >= max) {
             throw new IllegalArgumentException(String.format("Error: Cannot generate random number in range [%d, %d), min cannot be greater than or equal to max!", min, max));
         }
