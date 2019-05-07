@@ -174,7 +174,7 @@ public class MiningHarnessTest implements Publisher<Transaction> {
                     Thread.sleep(Block.BLOCK_TIME/10);
                 } catch (InterruptedException ex) {
                     System.out.println(ex.getMessage());
-		}
+		        }
             }
         }
     }

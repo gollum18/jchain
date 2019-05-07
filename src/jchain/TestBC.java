@@ -59,7 +59,7 @@ public class TestBC {
         };
         LinkedList<Transaction> testTxs = new LinkedList<>();
         testTxs.add(new Transaction(testInputs, testOutputs));
-        Header testHeader = new Header("0000000000000000", testTxs, 0);
+        Header testHeader = new Header(BCUtil.padString(64, '0', ""), testTxs, 0);
         BC testBC = new BC(new Block(testTxs, testHeader));
         // Subscribe the miners to receive transactions
         for (; miners > 0; miners--) {
@@ -75,6 +75,7 @@ public class TestBC {
             ex.printStackTrace();
             return false;
         }
+        System.out.println(String.format("Height of lead block is: %d", testBC.getHeight()));
         return true;
     }
 

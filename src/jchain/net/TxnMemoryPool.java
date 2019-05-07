@@ -94,7 +94,7 @@ public class TxnMemoryPool {
             throw new IllegalOperationException("Cannot get tx from txpool, pool is empty!");
         }
         // generate a random position to pull from, this is where we pay for using a linked list, although since the transaction pool is limited in size, it `should` be ok
-        // TODO: this should follow the rule of k confirmations
+        // TODO: this should follow the rule of k confirmations, but it is okay for now since we are working at getting mining working on a single node
         int pos = BCUtil.getInstance().randRange(mTxPool.size());
         Transaction tx = mTxPool.get(pos);
         mTxPool.remove(tx);

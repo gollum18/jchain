@@ -7,8 +7,10 @@ import jchain.bc.Output;
 import jchain.bc.Transaction;
 import jchain.net.Subscriber;
 import jchain.net.TxnMemoryPool;
+import jchain.util.BCUtil;
 import jchain.util.IllegalOperationException;
 
+import java.math.BigInteger;
 import java.util.LinkedList;
 
 /**
@@ -162,13 +164,13 @@ public class Miner implements Subscriber<Transaction> {
                         nonce
                     );
                     // check if header hash is less than target
-                    int hashVal = header.getHashValue();
-                    int target = Header.target();
+                    BigInteger hashVal = new BigInteger(header.getMiningHash(), 16);
+                    BigInteger target = Header.target();
                     // NOTE: This is a debug statement, pull it out
                     //  when done
                     System.out.println(String.format("Miner: POW %d < %d", hashVal, target));
                     // Perform POW check
-                    if (hashVal < target) {
+                    if (hashVal.compareTo(target) < 0) {
                         // create a new block, add it to bc
                         mBC.addBlock(new Block(mTxList, header));
                         // notify that a new block was found

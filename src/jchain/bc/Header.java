@@ -1,11 +1,14 @@
 package jchain.bc;
 
+import java.nio.ByteBuffer;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
 
 import jchain.bc.Transaction;
 import jchain.util.BCUtil;
 import jchain.util.Hashable;
+import jchain.util.MerkleTree;
 
 /**
  * Represents a block header in a blockchain system.
@@ -25,11 +28,11 @@ public class Header implements Hashable {
     private int nVersionNumber;
     private int nTimestamp;
     private static int nBits = 0x207fffff;  // Little easier
-    //private static int nBits =  0x1d00ffff; // TestNet difficulty
+    //private static int nBits = 0x1d00ffff; // TestNet difficulty
     private int nNonce = 0;
-    private int nHashValue = 0;
     private String sPrevBlockHash;
     private String sHash;
+    private String sMiningHash;
 
     //
     // CONSTRUCTORS
@@ -53,15 +56,14 @@ public class Header implements Hashable {
         nVersionNumber = VERSION_NUMBER;
         nNonce = nonce;
         nTimestamp = BCUtil.now();
-        // generate the mining hash value
+        // generate the mining hash
         StringBuilder sb = new StringBuilder();
         sb.append(prevBlockHash);
-        for (Transaction tx : txList) {
-            sb.append(tx.getHash());
-        }
-        sb.append(nonce);
-        byte[] bytes = BCUtil.getInstance().hash(sb.toString());
-        nHashValue = BCUtil.fromByteArray(bytes);
+        // TODO: This seems wasteful to me, sounds like a refactor
+        MerkleTree tree = new MerkleTree(txList);
+        sb.append(tree.computeHash());
+        sb.append(nNonce);
+        sMiningHash = BCUtil.getInstance().doubleHash(sb.toString());
     }
 
     //
@@ -137,25 +139,21 @@ public class Header implements Hashable {
         return sHash;
     }
     
-    /**
-     * Returns the integer value of the headers SHA-256 hash for mining.
-     * @return An integer representing the headers hash.
-     */
-    public int getHashValue() {
-        return nHashValue;
+    public String getMiningHash() {
+        return sMiningHash;
     }
     
     /**
      * Returns the target value for mining.
      * @return A target value for mining.
      */
-    public static int target() {
+    public static BigInteger target() {
         String bitsHex = Integer.toHexString(nBits);
         int coefficient = Integer.parseInt(bitsHex.substring(2, bitsHex.length()), 16);
         int exponent = Integer.parseInt(bitsHex.substring(0, 2), 16);
-        int targetStr = (int)Math.pow((coefficient*2), 0x8*(exponent-0x3));
-        byte[] bytes = BCUtil.getInstance().hash(String.valueOf(targetStr));
-        return BCUtil.fromByteArray(bytes);
+        double right = Math.pow(2, 0x8*(exponent-0x3));
+        BigDecimal result = new BigDecimal(String.valueOf(coefficient*right));
+        return result.toBigInteger();
     }
 
 }

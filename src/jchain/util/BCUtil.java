@@ -141,19 +141,18 @@ public class BCUtil {
     }
     
     /**
-     * Hashes a String value into a byte array using SHA-256.
-     * @param value A value to hash.
-     * @return A byte array representing a SHA-256 hash.
+     * Converts a hex string to a byte array.
+     * Taken from: https://stackoverflow.com/questions/140131/convert-a-string-representation-of-a-hex-dump-to-a-byte-array-using-java
+     * @param s A hexstring.
+     * @return byte[] A byte array representing the hexstring.
      */
-    public synchronized byte[] hash(String value) {
-        try {
-            mDigest.update(value.getBytes("UTF-8"));
-        } catch (UnsupportedEncodingException ex) {
-            System.err.println(ex.getMessage());
-            ex.printStackTrace();
-            System.exit(-1);
+    public static byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i+1), 16));
         }
-        return mDigest.digest();
+return data;
     }
 
     /**
