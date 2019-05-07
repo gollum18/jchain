@@ -60,7 +60,7 @@ public class Header implements Hashable {
         StringBuilder sb = new StringBuilder();
         sb.append(prevBlockHash);
         // TODO: This seems wasteful to me, sounds like a refactor
-        MerkleTree tree = new MerkleTree(txList);
+        MerkleTree<Transaction> tree = new MerkleTree<>(txList);
         sb.append(tree.computeHash());
         sb.append(nNonce);
         sMiningHash = BCUtil.getInstance().doubleHash(sb.toString());
