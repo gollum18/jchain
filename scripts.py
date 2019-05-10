@@ -27,6 +27,7 @@ def usage(err=None):
     if err:
         print('The following error has occurred:')
         print(err)
+        print(err.args)
         print('-'*80)
 
 # walks the source tree and builds the sources.txt file
