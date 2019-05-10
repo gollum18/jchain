@@ -25,7 +25,7 @@ The project is divided into three folders, 'src', 'out', and 'docs'. The 'src' f
 
 
 The 'src' folder currently has the following topology:
-
+```bash
 src
 └── jchain
     ├── bc
@@ -50,10 +50,10 @@ src
         ├── NoSuchBlockException.java
         ├── NoSuchTransactionException.java
         └── README.md
-   
+```
      
 Correspondingly, the 'out' folder has the following structure:
-
+```bash
 out
 └── jchain
     ├── bc
@@ -85,6 +85,7 @@ out
         ├── MerkleTree.class
         ├── NoSuchBlockException.class
         └── NoSuchTransactionException.class
+```
 
 ---
 ## Build/Compile Instructions
