@@ -134,7 +134,7 @@ public class Miner implements Subscriber<Transaction> {
             boolean blockFound = false;
             // loop until the number of blocks in the pool is less 
             //  than the limit - 1 (because of coinbase)
-            while (mPool.count() > MIN_TXNS) {
+            while (mPool.count() >= MIN_TXNS) {
                 // reset the header information
                 mTxList.clear();
                 nonce = 0;
@@ -144,7 +144,7 @@ public class Miner implements Subscriber<Transaction> {
                 mTxList.add(genCoinbaseTx());
                 int txns = 0;
                 // Not entirely sure why +2 works here but it does, probably has to do with the coinbase transaction
-                if (mPool.count() < Block.MAX_TXNS) {
+                if (mPool.count() < Block.MAX_TXNS-1) {
                     txns = (int)(mPool.count() * Math.random()) + 2;
                 } else {
                     txns = (int)((Block.MAX_TXNS-1) * Math.random()) + 2;
