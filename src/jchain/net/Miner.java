@@ -21,6 +21,12 @@ import java.util.LinkedList;
 public class Miner implements Subscriber<Transaction> {
     
     //
+    // CONSTANTS
+    //
+    
+    public static final int MIN_TXNS = 1;
+    
+    //
     // FIELDS
     //
     
@@ -81,8 +87,10 @@ public class Miner implements Subscriber<Transaction> {
                 System.out.println(String.format("Miner %s: Adding transaction with hash %s to the mining pool.", this, tx.getHash()));
                 mPool.add(tx);
                 // check if the mining thread needs (re)started
+                // Periodically wake up the miner
                 if ((mThread == null || !mThread.isAlive()) && 
-                        mPool.size() >= Block.MAX_TXNS - 1) {
+                        //mPool.size() >= MIN_TXNS
+                        Math.random() > .625) {
                     mThread = new Thread(new MiningThread());
                     mThread.start();
                 }
@@ -108,10 +116,10 @@ public class Miner implements Subscriber<Transaction> {
          */
         public Transaction genCoinbaseTx() {
             String[] inputs = new String[] {
-                "A:50"
+                "A:50000"
             };
             Output[] outputs = new Output[] {
-                new Output(50, 0, "coinbase tx")
+                new Output(50000, 0, "coinbase tx")
             };
             return new Transaction(inputs, outputs);
         }
@@ -120,13 +128,13 @@ public class Miner implements Subscriber<Transaction> {
         public void run() {
             // only mine if the pool is not empty
             LinkedList<Transaction> mTxList = new LinkedList<Transaction>();
-            // the nonce value
+            // nonce runs from min 0 to max int value
             int nonce = 0;
             // used for controlling the mining loop
             boolean blockFound = false;
             // loop until the number of blocks in the pool is less 
             //  than the limit - 1 (because of coinbase)
-            while (mPool.count() >= Block.MAX_TXNS - 1) {
+            while (mPool.count() > MIN_TXNS) {
                 // reset the header information
                 mTxList.clear();
                 nonce = 0;
@@ -134,20 +142,26 @@ public class Miner implements Subscriber<Transaction> {
                 blockFound = false;
                 // generate the coinbase transaction
                 mTxList.add(genCoinbaseTx());
+                int txns = 0;
+                // Not entirely sure why +2 works here but it does, probably has to do with the coinbase transaction
+                if (mPool.count() < Block.MAX_TXNS) {
+                    txns = (int)(mPool.count() * Math.random()) + 2;
+                } else {
+                    txns = (int)((Block.MAX_TXNS-1) * Math.random()) + 2;
+                }
                 // pull transactions till we reach the tx limit
-                while (mTxList.size() < Block.MAX_TXNS) {
+                while (mTxList.size() < txns) {
                     try {
                         mTxList.add(mPool.get());
                     } catch (IllegalOperationException e) {
+                        System.err.println(e);
                         e.printStackTrace();
-                        System.err.println("MiningThread cannot continue, thread aborted!");
                         // dump all of the txs back into the pool
                         for (Transaction tx : mTxList) {
                             try {
                                 mPool.add(tx);
                             } catch (IllegalOperationException f) {
-                                System.err.println("Miner.MiningThread: An exception occurred when adding transactions back to the pool!");
-                                continue;
+                                System.err.println(f);
                             }
                         }
                         return;
@@ -168,16 +182,16 @@ public class Miner implements Subscriber<Transaction> {
                     BigInteger target = Header.target();
                     // NOTE: This is a debug statement, pull it out
                     //  when done
-                    System.out.println(String.format("Miner: POW %d < %d", hashVal, target));
+                    //System.out.println(String.format("Miner: POW %d < %d", hashVal, target));
                     // Perform POW check
                     if (hashVal.compareTo(target) < 0) {
+                        // set blockFound
+                        blockFound = true;
                         // create a new block, add it to bc
                         mBC.addBlock(new Block(mTxList, header));
                         // notify that a new block was found
                         //  in reality this would be a broadcast
-                        System.out.println(String.format("Miner: Found new block with hash: %s", mBC.getLeadBlock().getHash()));
-                        // set blockFound
-                        blockFound = true;
+                        System.out.println(String.format("Miner: Found new block with hash: %s, TX Count: %d", mBC.getLeadBlock().getHash(), mBC.getLeadBlock().getTransactionCount()));
                     }
                     // increment the nonce
                     nonce++;

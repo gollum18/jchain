@@ -296,11 +296,11 @@ public class MerkleTree<T extends Hashable> {
             int left = 0, right = 0;
             // get count of left if it exists
             if (mLeft != null) {
-                return mLeft.count();
+                left = mLeft.count();
             }
             // get count of right if it exists
             if (mRight != null) {
-                return mRight.count();
+                right = mRight.count();
             }
             // return the sum of the left and right subtrees
             return left + right;

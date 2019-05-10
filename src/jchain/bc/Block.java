@@ -24,7 +24,7 @@ public class Block implements Hashable {
     // max transactions in a block, may change to int/long in future
     public static final short MAX_TXNS = 10;
     // the amount of time in between block generation
-    public static final long BLOCK_TIME = 5000;
+    public static final long BLOCK_TIME = 1000;
 
     // fields
 

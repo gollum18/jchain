@@ -1,7 +1,6 @@
 package jchain.util;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
@@ -9,6 +8,7 @@ import java.util.Iterator;
 import java.util.Random;
 
 import jchain.bc.Transaction;
+import jchain.util.IllegalOperationException;
 
 /**
  * Contains both static and non-static (singleton) helper methods that 
@@ -132,27 +132,18 @@ public class BCUtil {
     }
     
     /**
-     * Converts an array of bytes to an integer value.
-     * @param bytes A byte array.
-     * @return An integer representing the byte array.
+     * Takes a whole integer value and breaks it into a coin value.
+     * @param value A value to mint coins from.
+     * @return A JCoin denomination that is 1/1000th of value.
      */
-    public static int fromByteArray(byte[] bytes) {
-        return ByteBuffer.wrap(bytes).getInt();
-    }
-    
-    /**
-     * Converts a hex string to a byte array.
-     * Taken from: https://stackoverflow.com/questions/140131/convert-a-string-representation-of-a-hex-dump-to-a-byte-array-using-java
-     * @param s A hexstring.
-     * @return byte[] A byte array representing the hexstring.
-     */
-    public static byte[] hexStringToByteArray(String s) {
-        int len = s.length();
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i+1), 16));
+    public static double mint(int value) 
+            throws IllegalOperationException {
+        if (value < 0) {
+            throw new IllegalOperationException(
+                "Mint JCoin", 
+                "Unable to mint JCoin, value < 0!");
         }
-return data;
+        return value*(1.0/1000.0);
     }
 
     /**

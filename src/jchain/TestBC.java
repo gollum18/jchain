@@ -52,10 +52,10 @@ public class TestBC {
         // create a test blockchain with a genesis block, each 
         //  miner starts with the same blockchain
         String[] testInputs = new String[] {
-            "A:10"
+            "A:5000"
         };
         Output[] testOutputs = new Output[] {
-            new Output(10, 0, "genesis tx")
+            new Output(5000, 0, "genesis tx")
         };
         LinkedList<Transaction> testTxs = new LinkedList<>();
         testTxs.add(new Transaction(testInputs, testOutputs));

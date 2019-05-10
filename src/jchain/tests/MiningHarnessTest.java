@@ -110,7 +110,7 @@ public class MiningHarnessTest implements Publisher<Transaction> {
 
         // generate the input content
         for (int i = 0; i < inputs.length; i++) {
-            int input = BCUtil.getInstance().randRange(1, 2000);
+            int input = BCUtil.getInstance().randRange(500, 100000);
             inputs[i] = String.valueOf(input);
             inputAmt += input;
         }
@@ -171,7 +171,7 @@ public class MiningHarnessTest implements Publisher<Transaction> {
 
                 // sleep for the specified transaction time
                 try {
-                    Thread.sleep(Block.BLOCK_TIME/10);
+                    Thread.sleep(Block.BLOCK_TIME);
                 } catch (InterruptedException ex) {
                     System.out.println(ex.getMessage());
 		        }

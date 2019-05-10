@@ -2,6 +2,7 @@ package jchain.bc;
 
 import jchain.util.BCUtil;
 import jchain.util.Hashable;
+import jchain.util.IllegalOperationException;
 
 /**
  * Represents an output in a Transaction.
@@ -27,18 +28,18 @@ public class Output implements Hashable {
 
     /**
      * Returns an instance of an Output with the specified value, index, and script.
-     * @param value The value of the Output in the transaction.
+     * @param minis The amount of minis constituting the Output. A mini is 1/1000th of a JCoin.
      * @param index The index of the Output in the transaction.
      * @param script The script associated with the Output.
      */
-    public Output(int value, int index, String script) {
-        if (value <= 0) {
-            throw new IllegalArgumentException("Error: Output value must be > 0.");
+    public Output(int minis, int index, String script) {
+        if (minis <= 0) {
+            throw new IllegalArgumentException("Error: Amount of minis in output must be > 0.");
         }
         if (index < 0) {
             throw new IllegalArgumentException("Error: Output index must be >= 0.");
         }
-        nValue = value;
+        nValue = minis;
         nIndex = index;
         sScript = script;
         sHash = computeHash();
@@ -49,11 +50,24 @@ public class Output implements Hashable {
     //
 
     /**
-     * Returns the value of the Output.
-     * @return The value of the Output in the transaction.
+     * Returns the value of the Output in minis.
+     * @return The value of the Output (in minis) in the transaction.
      */
-    public int getValue() {
+    public int getValueAsMinis() {
         return nValue;
+    }
+    
+    /**
+     * Returns the value of the Output in JCoins.
+     * @return The value of the Output (in JCoins) in the transaction.
+     */
+    public double getValueAsJCoins() {
+        try {
+            return BCUtil.mint(nValue);
+        } catch (IllegalOperationException ex) {
+            System.err.println(ex);
+            return Double.NaN;
+        }
     }
 
     /**
@@ -94,8 +108,8 @@ public class Output implements Hashable {
         StringBuilder sb = new StringBuilder();
         // Include timestamp and random number since it is very possible multiple outputs could have the same value, index, and script - don't want collisions
         sb.append(BCUtil.now());
-        sb.append(BCUtil.getInstance().randRange(-500000, 500000));
-        sb.append(getValue());
+        sb.append(BCUtil.getInstance().randRange(0, Integer.MAX_VALUE));
+        sb.append(getValueAsMinis());
         sb.append(getIndex());
         sb.append(getScript());
         return BCUtil.getInstance().doubleHash(sb.toString());
@@ -118,7 +132,8 @@ public class Output implements Hashable {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Value: ").append(nValue);
+        sb.append("Value (minis): ").append(getValueAsMinis());
+        sb.append("Value: (JCoins): ").append(getValueAsJCoins());
         sb.append(", Index: ").append(nIndex);
         return sb.toString();   
     }

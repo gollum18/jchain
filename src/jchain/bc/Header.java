@@ -27,7 +27,9 @@ public class Header implements Hashable {
 
     private int nVersionNumber;
     private int nTimestamp;
-    private static int nBits = 0x207fffff;  // Little easier
+    // This guy is easier to mine with
+    private static int nBits = 0x207fffff;  // RegTest difficulty
+    // Than this guy 
     //private static int nBits = 0x1d00ffff; // TestNet difficulty
     private int nNonce = 0;
     private String sPrevBlockHash;
