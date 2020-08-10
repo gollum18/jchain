@@ -239,13 +239,8 @@ public class MerkleTree<T extends Hashable> {
                 } else if (right < left) {
                     mRight.add(hashable);
                 } else {
-                    // if the heights are the same pick a branch
-                    //   at random
-                    if (Math.random() < 0.5) {
-                        mLeft.add(hashable);
-                    } else {
-                        mRight.add(hashable);
-                    }
+                    // if the heights are the same just go left
+                    mLeft.add(hashable);
                 }
             }
         } // end add
