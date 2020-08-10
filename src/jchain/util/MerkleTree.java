@@ -234,13 +234,10 @@ public class MerkleTree<T extends Hashable> {
                     right = mRight.height();
                 }
                 // add to the tree with the lesser height
-                if (left < right) {
+                if (left <= right) {
                     mLeft.add(hashable);
-                } else if (right < left) {
-                    mRight.add(hashable);
                 } else {
-                    // if the heights are the same just go left
-                    mLeft.add(hashable);
+                    mRight.add(hashable);
                 }
             }
         } // end add
